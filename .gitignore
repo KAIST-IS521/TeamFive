@@ -154,3 +154,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+## Project specific
+*.sqlite
+*.sqlite3
