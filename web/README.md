@@ -11,6 +11,14 @@ Written in Python 3 and Django 1.11.
 - Virtualenv (recommended)
 
 
+## Config
+
+    cd gov/settings/
+    cp local.py.template local.py
+
+And then put appropriate `SECRET_KEY` and `DATABASE` values.
+
+
 ## Setup
 
     pip install -r requirements.txt
