@@ -1,3 +1,19 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    allow_script = models.BooleanField()
+    author = models.ForeignKey('BoardUser')
+
+    def __str__(self):
+        return "Post '{}'".format(self.title)
+
+class BoardUser(models.Model):
+    username = models.CharField(max_length=100)
+    notarized = models.BooleanField()
+
+    def __str__(self):
+        return "BoardUser '{}' ({})".format(self.username,
+                ['Normal', 'Notarized'][self.notarized])
