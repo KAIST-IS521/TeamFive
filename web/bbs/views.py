@@ -20,3 +20,14 @@ def write(request):
         post = Post(title=title, content=content, allow_script=use_script, author=bogus_user)
         post.save()
         return redirect('list')
+
+def auth_index(request):
+    return render(request, 'bbs/auth_index.html', {})
+
+def auth_chal(request):
+    if request.method == 'POST':
+        auth_id = request.POST.get('id')
+        request.session['auth_id'] = auth_id
+        return render(request, 'bbs/auth_chal.html', {'auth_id': auth_id})
+    else:
+        return redirect('auth_index')

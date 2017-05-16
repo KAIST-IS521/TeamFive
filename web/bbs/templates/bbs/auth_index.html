@@ -1,0 +1,14 @@
+<h1>Auth yourself!</h1>
+
+<form action="{% url 'auth_chal' %}" method="post">
+  <p>
+    <span>Github ID</span>
+    <input type="text" name="id"></input>
+  </p>
+
+  {% csrf_token %}
+
+  <p>
+    <button type="submit">Submit</button>
+  </p>
+</form>
