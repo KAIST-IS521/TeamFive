@@ -7,3 +7,9 @@ def index(request):
 def list(request):
     posts = Post.objects.all()
     return render(request, 'bbs/list.html', {'posts': posts})
+
+def write(request):
+    if request.method == 'GET':
+        return render(request, 'bbs/write.html', {})
+    elif request.method == 'POST':
+        return render(request, 'bbs/write.html', {})
