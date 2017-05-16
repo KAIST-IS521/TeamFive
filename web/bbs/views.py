@@ -1,5 +1,8 @@
-from django.shortcuts import render, redirect
-from .models import Post, BoardUser
+from django.shortcuts import redirect, render
+
+from .auth import generate_challenge, get_service_pubkey
+from .models import BoardUser, Post
+
 
 def index(request):
     return render(request, 'bbs/index.html', {})
@@ -27,7 +30,16 @@ def auth_index(request):
 def auth_chal(request):
     if request.method == 'POST':
         auth_id = request.POST.get('id')
-        request.session['auth_id'] = auth_id
-        return render(request, 'bbs/auth_chal.html', {'auth_id': auth_id})
-    else:
-        return redirect('auth_index')
+        challenge = generate_challenge(auth_id)
+        if challenge is not None:
+            nonce, enc_nonce = challenge
+            request.session['auth_id'] = auth_id
+            request.session['auth_nonce'] = nonce
+            service_pubkey = get_service_pubkey()
+            context = {
+                'auth_id': auth_id,
+                'enc_nonce': enc_nonce,
+                'service_pubkey': service_pubkey
+            }
+            return render(request, 'bbs/auth_chal.html', context)
+    return redirect('auth_index')
