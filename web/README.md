@@ -16,7 +16,13 @@ Written in Python 3 and Django 1.11.
     cd gov/settings/
     cp local.py.template local.py
 
-And then put appropriate `SECRET_KEY` and `DATABASE` values.
+And then put following variables:
+
+- `SECRET_KEY`: Long random string.
+- `STUDENT_PUBKEY_DIR`: Absolute path to the directory that contains all students public keys.
+- `SERVICE_PUBKEY`: Absolute path to the public key of this service.
+- `SERVICE_PRIVKEY`: Absolute path to the private key of this service.
+- `SERVICE_PRIVKEY_PASSPHRASE`: Passphrase for the private key of this service.
 
 If you want to run in debug mode, replace `from .prod import *` by `from .dev import *`.
 
