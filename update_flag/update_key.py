@@ -17,13 +17,15 @@ class UpdateKey():
         self.gpg = gnupg.GPG()
         #import our keys
         with open(team_key_path, "r") as f:
-            self.teamgpg = self.gpg.import_keys(f.read()) 
-        self.tagpgList = []
+            self.gpg.import_keys(f.read()) 
+        self.tagpgList = {}
         #import TA keys
         files = os.walk(ta_key_folder_path).next()[2]
         for filename in files: 
             with open(ta_key_folder_path+"/"+filename, 'r') as f:
-                self.tagpgList.append( self.gpg.import_keys(f.read()) )
+                pub_key = self.gpg.import_keys(f.read())
+                if len(pub_key.fingerprints) != 0:
+                    self.tagpgList[os.path.splitext(filename)[0]] = pub_key.fingerprints[0]
         
         
     # Decrypt Data with Team Private Key
@@ -43,9 +45,12 @@ class UpdateKey():
         f.close()
         
     # Verify Signature
-    def VerifySig(self, data):
-        result = self.gpg.verify_data(SIG_TEMP_FILE, data)
-        return result.valid
+    def VerifySig(self, signer, newflag):
+        result = self.gpg.verify_data(SIG_TEMP_FILE, signer+":"+newflag)
+        # Check Singer's fingerprint
+        if result.fingerprint == self.tagpgList[signer]:
+            return result.valid
+        return False 
 
     # Save Flag & Delete Signature file
     def SaveFlag(self, flag):
@@ -57,11 +62,12 @@ class UpdateKey():
 
     # Process Key Update
     def UpdateKey(self, data):
+        result = {'result':False, 'signer':'', 'newflag':''}
         try:
             #Step1. Decrypt Data
             dec_data = self.DecryptData(data)
             if dec_data == '':
-                return False
+                return result 
             #Step2. Parsing With Json
             json_data = json.loads(dec_data, object_hook=ascii_encode_dict)
 
@@ -69,18 +75,20 @@ class UpdateKey():
             self.SaveSigToFile(json_data['signature'])
 
             #Step4. Verifying Signature
-            valid = self.VerifySig(json_data['signer'] +":"+ json_data['newflag'])
+            valid = self.VerifySig(json_data['signer'],  json_data['newflag'])
 
             if not valid:
-                return False 
+                return result 
             
             #Step5. Save Flag to File
             self.SaveFlag(json_data['newflag'])
-
+            result['signer'] = json_data['signer']
+            result['newflag'] = json_data['newflag']
         except:
-            return False
+            return result 
 
-        return True
+        result['result'] = True
+        return result 
 
     
 
