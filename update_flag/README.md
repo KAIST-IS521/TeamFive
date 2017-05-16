@@ -15,6 +15,7 @@ Written in Python 2.7 and python-gnupg
 
 For executing flag updater, we need one team private key and TA's public keys.   
 In `takeys` folder, I gather the TA's public keys.   
+Public key must be named as `GithubID.pub`   
 
 ## Setup
 
