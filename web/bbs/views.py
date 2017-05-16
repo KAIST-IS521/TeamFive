@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 
-from .auth import generate_challenge, get_service_pubkey
+from .auth import generate_challenge, get_service_pubkey, verify_response
 from .models import BoardUser, Post
 
 
@@ -42,4 +42,16 @@ def auth_chal(request):
                 'service_pubkey': service_pubkey
             }
             return render(request, 'bbs/auth_chal.html', context)
+    return redirect('auth_index')
+
+def auth_resp(request):
+    if request.method == 'POST':
+        auth_resp = request.POST.get('auth_resp')
+        auth_nonce = request.session['auth_nonce']
+        auth_id = request.session['auth_id']
+        if verify_response(auth_nonce, auth_resp):
+            print("Auth success for {}".format(auth_id))
+        else:
+            print("Auth failed")
+        return redirect('index')
     return redirect('auth_index')

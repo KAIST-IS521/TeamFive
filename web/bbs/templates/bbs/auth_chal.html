@@ -9,3 +9,16 @@
   <div>Service public key:</div>
   <pre>{{ service_pubkey }}</pre>
 </p>
+
+<form action="{% url 'auth_resp' %}" method="post">
+  <p>
+    <div>Send encrypted nonce:</div>
+    <textarea name="auth_resp"></textarea>
+  </p>
+
+  {% csrf_token %}
+
+  <p>
+    <button type="submit">Submit</button>
+  </p>
+</form>

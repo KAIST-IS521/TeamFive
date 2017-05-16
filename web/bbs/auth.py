@@ -44,3 +44,18 @@ def get_service_pubkey():
     with open(key_path, 'r') as f:
         pubkey = f.read()
     return pubkey
+
+def verify_response(auth_nonce, auth_resp):
+    '''
+    Given auth_nonce and auth_resp, decrypts the auth_resp
+    and check if the content is equal to auth_nonce.
+    '''
+    # Load service private key
+    gpg = gnupg.GPG()
+    key_path = settings.SERVICE_PRIVKEY
+    passphrase = settings.SERVICE_PRIVKEY_PASSPHRASE
+    with open(key_path, 'r') as f:
+        gpg.import_keys(f.read())
+    pt = gpg.decrypt(auth_resp, passphrase=passphrase)
+    resp_nonce = pt.data.decode('utf-8').strip()
+    return resp_nonce == auth_nonce
