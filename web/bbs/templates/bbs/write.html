@@ -1,1 +1,23 @@
 <h1>New post</h1>
+
+<form action="{% url 'write' %}" method="post">
+  <p>
+    <span>Title</span>
+    <input type="text" name="title"></input>
+  </p>
+
+  <p>
+    <span>Content</span>
+    <textarea name="content"></textarea>
+  </p>
+
+  <p>
+    <span>Use JavaScript</span>
+    <input type="checkbox" name="use_script"></input>
+  </p>
+
+  {% csrf_token %}
+  <p>
+    <button type="submit">Submit</button>
+  </p>
+</form>
