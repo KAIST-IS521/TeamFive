@@ -7,6 +7,9 @@ from .models import BoardUser, Post
 def index(request):
     return render(request, 'bbs/index.html', {})
 
+def home(request):
+    return render(request, 'bbs/home.html', {})
+
 def list(request):
     posts = Post.objects.all()
     return render(request, 'bbs/list.html', {'posts': posts})
@@ -22,7 +25,7 @@ def write(request):
         bogus_user = BoardUser.objects.all()[0]
         post = Post(title=title, content=content, allow_script=use_script, author=bogus_user)
         post.save()
-        return redirect('list')
+        return redirect("bbs/#List")
 
 def auth_index(request):
     return render(request, 'bbs/auth_index.html', {})

@@ -1,23 +1,19 @@
 <h1>New post</h1>
-
 <form action="{% url 'write' %}" method="post">
-  <p>
-    <span>Title</span>
-    <input type="text" name="title"></input>
-  </p>
-
-  <p>
-    <span>Content</span>
-    <textarea name="content"></textarea>
-  </p>
-
-  <p>
-    <span>Use JavaScript</span>
-    <input type="checkbox" name="use_script"></input>
-  </p>
-
+    <div class="form-group">
+        <label for="Content">Title</label>
+        <input type="text" name="title" class="form-control" placeholder="Input The Title">
+    </div>
+    <div class="form-group">
+        <label for="Content">Content</label>
+        <textarea name="content" class="form-control" rows="10" placeholder="Input Your Contents" ></textarea>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox">Use JavaScript
+        </label>
+    </div>
   {% csrf_token %}
-  <p>
-    <button type="submit">Submit</button>
-  </p>
+    <button type="submit" class="btn btn-default">Submit</button>
 </form>
+
