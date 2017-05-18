@@ -23,7 +23,7 @@ def write(request):
         bogus_user = BoardUser.objects.all()[0]
         post = Post(title=title, content=content, allow_script=use_script, author=bogus_user)
         post.save()
-        return redirect("bbs/#List")
+        return redirect("list")
 
 def read(request, post_id):
     try:
