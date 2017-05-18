@@ -43,9 +43,9 @@ def do_auth(domain, github_id):
 
     # Encrypt nonce
     gpg = gnupg.GPG()
-    gpg.import_keys(service_pubkey)
-    service_keyid = gpg.list_keys()[0]['keyid']
-    resp = gpg.encrypt(nonce, service_keyid)
+    service_gpg = gpg.import_keys(service_pubkey)
+    #service_keyid = gpg.list_keys()[0]['keyid']
+    resp = gpg.encrypt(nonce, service_gpg.fingerprints[0], always_trust=True)
 
     # Login
     r = s.post(domain + '/bbs/auth/resp/',
