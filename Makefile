@@ -4,7 +4,7 @@ deps:
 	sudo bash install-deps.bash
 
 flag:
-	make -C flag
+	make -C update_flag
 
 web:
 	make -C web
