@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from .auth import generate_challenge, get_service_pubkey, verify_response
 from .models import BoardUser, Post
 
+from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     return render(request, 'bbs/index.html', {})
@@ -26,6 +27,19 @@ def write(request):
         post = Post(title=title, content=content, allow_script=use_script, author=bogus_user)
         post.save()
         return redirect("bbs/#List")
+
+def read(request, post_id):
+    try:
+        post = Post.objects.get(id=int(post_id))
+    except ObjectDoesNotExist:
+        return redirect('list')
+    return render(request,
+                  'bbs/read.html',
+                  {
+                      'title': post.title,
+                      'content': post.content,
+                      'author': post.author.username
+                  })
 
 def auth_index(request):
     return render(request, 'bbs/auth_index.html', {})
