@@ -1,67 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <style>
-        .starter-template {
-            padding: 140px 15px;
-            text-align: center;
-        }
-    </style>
-    <title> New Post </title>
-    <!-- 합쳐지고 최소화된 최신 CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    {% load static %}
-    <link rel="stylesheet" href="{% static "/css/my.css" %}">
+{% extends 'bbs/base.html' %}
 
-    <!-- 부가적인 테마 -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-</head>
+{% block title %}
+IS521 Government BBS
+{% endblock %}
 
-<body>
+{% block content %}
+<h1>Prove that you are {{ auth_id }}</h1>
+<div class="col-sm-8 col-sm-offset-2">
+    <div>Encrypted nonce:</div>
+    <pre>{{ enc_nonce }}</pre>
+</div>
+<br>
 
-    {% include "bbs/nav.html" %}
+<div class="col-sm-8 col-sm-offset-2">
+    <div>Service public key:</div>
+    <pre>{{ service_pubkey }}</pre>
+</div>
 
-    <div class="starter-template" id="siteloader">
-        <h1>Prove that you are {{ auth_id }}</h1>
-        <div class="col-sm-8 col-sm-offset-2">
-            <div>Encrypted nonce:</div>
-            <pre>{{ enc_nonce }}</pre>
-        </div>
-        <br>
+<div class="col-sm-8 col-sm-offset-2">
+    <form action="{% url 'auth_resp' %}" method="post">
+        <p>
+        <div>Send encrypted nonce:</div>
+        <textarea class="form-control" name="auth_resp"></textarea>
+        </p>
 
-        <div class="col-sm-8 col-sm-offset-2">
-            <div>Service public key:</div>
-            <pre>{{ service_pubkey }}</pre>
-        </div>
-    
-        <div class="col-sm-8 col-sm-offset-2">
-            <form action="{% url 'auth_resp' %}" method="post">
-                <p>
-                    <div>Send encrypted nonce:</div>
-                    <textarea class="form-control" name="auth_resp"></textarea>
-                </p>
-        
-                {% csrf_token %}
-        
-                <p>
-                    <button type="submit">Submit</button>
-                </p>
-            </form>
-        </div>
-    </div>
+        {% csrf_token %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-
-</body>
-</html>
-
-
-
-
-
+        <p>
+        <button type="submit">Submit</button>
+        </p>
+    </form>
+</div>
+{% endblock %}
