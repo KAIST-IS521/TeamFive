@@ -4,7 +4,7 @@ setup: env
 	bash setup.bash
 
 env:
-	virtualenv --python=$(which python3) env
+	virtualenv --python=`which python3` env
 
 clean:
 	rm -rf env gov/db.sqlite3
