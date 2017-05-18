@@ -4,7 +4,6 @@ from . import views
 urlpatterns = (
     url(r'^$', views.index, name='index'),
     url(r'^list/', views.list, name='list'),
-    url(r'^home/', views.home, name='home'),
     url(r'^write/', views.write, name='write'),
     url(r'^read/(?P<post_id>\d+)', views.read, name='read'),
     url(r'^auth/$', views.auth_index, name='auth_index'),

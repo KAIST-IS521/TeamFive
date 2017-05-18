@@ -1,5 +1,43 @@
-<h1>Read post</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> New Post </title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/my.css" %}">
 
-<b>title:</b> {{ title }} <br>
-<b>content:</b> {{ content }} <br>
-<b>author: </b> {{ author }} <br>
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+</head>
+
+<body>
+
+    {% include "bbs/nav.html" %}
+
+    <div class="starter-template">
+        <h1>Read post</h1>
+
+        <b>title:</b> {{ title }} <br>
+        <b>content:</b> {{ content }} <br>
+        <b>author: </b> {{ author }} <br>
+        <button onclick="history.back();" type="button" class="btn btn-success">Back</button>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+
+
+

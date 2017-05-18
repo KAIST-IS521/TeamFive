@@ -1,28 +1,60 @@
-<script>
-$("#movewrite").click(function() {
-    $("#siteloader").load('/bbs/write');
-});
-</script>
-<table class="table table-hover table-responsive">
-<caption class="text-center"><h1>Write Your Opinion</h1><h4>Admin is watching</h4></caption>
-<thead>
-    <tr>
-        <th class="text-center col-md-2 col-sm-2 col-xs-2 col-lg-2">NO</th>
-        <th class="text-center col-md-6 col-sm-6 col-xs-6 col-lg-6">제목</th>
-        <th class="text-center col-md-4 col-sm-4 col-xs-4 col-lg-4">작성자</th>
-    </tr>
-</thead>
-<tbody>
-    {% for post in posts %}
-    <tr>
-        <td>{{ post.id }}</td>
-        <td><a href="{% url 'read' post.id %}">{{ post.title }}</a></td>
-        <td>{{ post.author.username }}</td>
-    </tr>
-    {% endfor %}
-</tbody>
-</table>
-<div class="col-md-2 col-sm-2 col-xs-2 col-lg-2">
-<button type="button" id="movewrite" class="btn btn-success btn-block">Write</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> New Post </title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/my.css" %}">
+
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+</head>
+
+<body>
+
+    {% include "bbs/nav.html" %}
+
+    <div class="starter-template" id="siteloader">
+        <table class="table table-hover table-responsive">
+        <caption class="text-center"><h1>Write Your Opinion</h1><h4>Admin is watching</h4></caption>
+        <thead>
+            <tr>
+                <th class="text-center col-md-2 col-sm-2 col-xs-2 col-lg-2">NO</th>
+                <th class="text-center col-md-6 col-sm-6 col-xs-6 col-lg-6">Title</th>
+                <th class="text-center col-md-4 col-sm-4 col-xs-4 col-lg-4">Author</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.id }}</td>
+                <td><a href="{% url 'read' post.id %}">{{ post.title }}</a></td>
+                <td>{{ post.author.username }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <div class="col-md-2 col-sm-2 col-xs-2 col-lg-2">
+        <a href="/bbs/write" style="color:white"><button type="button" class="btn btn-success btn-block">Write</button></a>
+        </div>
+
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+
+
 

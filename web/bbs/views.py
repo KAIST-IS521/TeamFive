@@ -8,9 +8,6 @@ from django.core.exceptions import ObjectDoesNotExist
 def index(request):
     return render(request, 'bbs/index.html', {})
 
-def home(request):
-    return render(request, 'bbs/home.html', {})
-
 def list(request):
     posts = Post.objects.all()
     return render(request, 'bbs/list.html', {'posts': posts})
