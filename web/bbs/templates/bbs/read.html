@@ -11,4 +11,11 @@
 <b>content:</b> {{ content }} <br>
 <b>author: </b> {{ author }} <br>
 <button onclick="history.back();" type="button" class="btn btn-success">Back</button>
+<button type="button" id="movedelete" class="btn btn-success">Delete</button>
+
+<script type="text/javascript">
+    document.getElementById("movedelete").onclick = function () {
+                location.href = "/bbs/delete/".concat( {{id }});
+                };
+</script>
 {% endblock %}

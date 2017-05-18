@@ -33,10 +33,21 @@ def read(request, post_id):
     return render(request,
                   'bbs/read.html',
                   {
+                      'id': post.id,
                       'title': post.title,
                       'content': post.content,
                       'author': post.author.username
                   })
+
+def delete(request, post_id):
+    try:
+        post = Post.objects.get(id=int(post_id))
+    except ObjectDoesNotExist:
+        return redirect('list')
+    #if post.author.username != request.session['auth_id']:
+    #    return redirect('list')
+    post.delete()
+    return redirect('list')
 
 def auth_index(request):
     return render(request, 'bbs/auth_index.html', {})
