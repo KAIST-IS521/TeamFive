@@ -1,0 +1,30 @@
+{% extends 'bbs/base.html' %}
+
+{% block title %}
+Write new post
+{% endblock %}
+
+{% block content %}
+<h1>New post</h1>
+<form id="myform" method="post">
+<script>
+    document.getElementById("myform").action = "/bbs/edit/"/concat({{ id }});
+</script>
+    <div class="form-group">
+        <label for="Content">Title</label>
+        <input type="text" name="title" class="form-control" value={{ title }}>
+    </div>
+    <div class="form-group">
+        <label for="Content">Content</label>
+        <textarea name="content" class="form-control" rows="10">{{ content }}
+        </textarea>
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox">Use JavaScript
+        </label>
+    </div>
+  {% csrf_token %}
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}

@@ -49,6 +49,30 @@ def delete(request, post_id):
     post.delete()
     return redirect('list')
 
+def edit(request, post_id):
+    try:
+        post = Post.objects.get(id=int(post_id))
+    except ObjectDoesNotExist:
+        return redirect('list')
+    if request.method == 'GET':
+        return render(request,
+                      'bbs/edit.html',
+                      {
+                          'id': post.id,
+                          'title': post.title,
+                          'content': post.content
+                      })
+    elif request.method == 'POST':
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        use_script = (request.POST.get('use_script') == 'on')
+        # TODO: Remove this and use current user from session.
+        bogus_user = BoardUser.objects.all()[0]
+        post.title = title
+        post.content = content
+        post.save()
+        return redirect("list")
+
 def auth_index(request):
     return render(request, 'bbs/auth_index.html', {})
 

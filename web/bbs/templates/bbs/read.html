@@ -12,10 +12,14 @@
 <b>author: </b> {{ author }} <br>
 <button onclick="history.back();" type="button" class="btn btn-success">Back</button>
 <button type="button" id="movedelete" class="btn btn-success">Delete</button>
+<button type="button" id="moveedit" class="btn btn-success">Edit</button>
 
 <script type="text/javascript">
     document.getElementById("movedelete").onclick = function () {
-                location.href = "/bbs/delete/".concat( {{id }});
-                };
+        location.href = "/bbs/delete/".concat( {{id }});
+    };
+    document.getElementById("moveedit").onclick = function () {
+        location.href = "/bbs/edit/".concat( {{id }});
+    }
 </script>
 {% endblock %}
