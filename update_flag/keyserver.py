@@ -12,6 +12,7 @@ TA_KEY_FOLDER = "takeys"
 
 
 def ClinetHandle(conn, ku):
+    # Recieve Data
     data = conn.recv(8192)
     result = ku.UpdateKey(data)
     if result['result']:

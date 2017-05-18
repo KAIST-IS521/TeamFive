@@ -8,18 +8,25 @@ FLAG_OUT_FILE = "/tmp/IS521GovFlag"
 PASSPHRASE = None 
 
 def ascii_encode_dict(data):
+    '''
+    json loads data as utf-8, unicode. But some function does't takes unicode.
+    This function change unicode dictionary into ascii encoding
+    '''
     ascii_encode = lambda x: x.encode('ascii')
     return dict(map(ascii_encode, pair) for pair in data.items())
 
+'''
+This class for the flag Update
+'''
 class UpdateKey():
     # init
     def __init__(self, team_key_path, ta_key_folder_path):
         self.gpg = gnupg.GPG()
-        #import our keys
+        #import our team keys
         with open(team_key_path, "r") as f:
             self.gpg.import_keys(f.read()) 
         self.tagpgList = {}
-        #import TA keys
+        #import TA's keys
         files = os.walk(ta_key_folder_path).next()[2]
         for filename in files: 
             with open(ta_key_folder_path+"/"+filename, 'r') as f:
@@ -91,7 +98,7 @@ class UpdateKey():
         return result 
 
     
-
+# Some test for UpdateKey class
 if __name__ == '__main__':
     uk = UpdateKey("./teamkeys/teamsecret.key", "./takeys/")
     """
