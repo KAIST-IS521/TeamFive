@@ -24,9 +24,10 @@ def generate_challenge(auth_id):
     gpg = gnupg.GPG()
     key_name = '{}.pub'.format(auth_id)
     key_path = os.path.join(settings.STUDENT_PUBKEY_DIR, key_name)
+    user_key = None
     try:
         with open(key_path, "r") as f:
-            gpg.import_keys(f.read())
+            user_key = gpg.import_keys(f.read())
     except FileNotFoundError:
         return None
 
@@ -34,8 +35,7 @@ def generate_challenge(auth_id):
     nonce = str(random.randint(0, 2**64))
 
     # Encrypt nonce
-    keyid = gpg.list_keys()[0]['keyid'] # There should be only one key.
-    enc_nonce = gpg.encrypt(nonce, keyid) # Returns ascii-armored encrypted messsage.
+    enc_nonce = gpg.encrypt(nonce, user_key.fingerprints[0], always_trust=True) # Returns ascii-armored encrypted messsage.
 
     return (nonce, enc_nonce)
 
