@@ -21,14 +21,14 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
-            return redirect("list")
+            return redirect('list')
         else:
-            return redirect("auth_index")
+            return render(request, 'bbs/login.html', {'error': True})
 
 @login_required(login_url='/bbs/login')
 def logout(request):
     auth.logout(request)
-    return redirect("index")
+    return redirect('index')
 
 
 #### BBS functions

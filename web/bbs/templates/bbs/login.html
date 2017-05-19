@@ -7,9 +7,10 @@ Login
 {% block content %}
     <h1>Please Login!</h1>
 
-    <br>
-    {% if form.errors %}
-        <p class = "error"> Sorry, that's not a valid username or password </p>
+    {% if error %}
+    <div class="alert alert-danger">
+        Sorry, that's not a valid username or password
+    </div>
     {% endif %}
 
     <form action="{% url 'login' %}" method="post" class="form-inline">
