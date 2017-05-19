@@ -44,7 +44,7 @@ def write(request):
         content = request.POST.get('content')
         use_script = (request.POST.get('use_script') == 'on')
         user = request.user
-        post = Post(title=title, content=content, allow_script=use_script, author=user)
+        post = Post(title=title, content=content, use_script=use_script, author=user)
         post.save()
         return redirect("list")
 
