@@ -8,6 +8,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 POSTING_XPATH = '/html/body/div/table/tbody/tr/td/a'
 FLAG_FILE = '/tmp/IS521GovFlag'
+#Below two variables are temporary for test
+ADMIN_ID = 'kwon'
+ADMIN_PW = 'kwon1234'
 
 def read_posting(driver):
     # Get post's links by inspecting html
@@ -28,10 +31,10 @@ def read_posting(driver):
 def bbs_login(driver):
     #TODO: Change login procee. Login with admin user for TEST
     login_id = driver.find_element_by_id('username')
-    login_id.send_keys('kwon')
+    login_id.send_keys(ADMIN_ID)
 
     login_pw = driver.find_element_by_id('password')
-    login_pw.send_keys('kwon1234')
+    login_pw.send_keys(ADMIN_PW)
 
     login_form = driver.find_element_by_class_name('form-inline')
     login_form.submit()
