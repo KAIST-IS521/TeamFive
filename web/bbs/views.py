@@ -35,16 +35,23 @@ def list(request):
     posts = Post.objects.all()
     return render(request, 'bbs/list.html', {'posts': posts})
 
+def check_post_permission(user, post, use_script):
+    if use_script and not user.has_perm('use_script'):
+        return False
+    if post and post.author != user:
+        return False
+    return True
+
 @login_required(login_url='/bbs/login')
 def write(request):
     if request.method == 'GET':
         return render(request, 'bbs/write.html', {})
     elif request.method == 'POST':
+        user = request.user
         title = request.POST.get('title')
         content = request.POST.get('content')
-        use_script = (request.POST.get('use_script') == 'on')
-        user = request.user
-        if not use_script or user.has_perm('use_script'):
+        use_script = 'use_script' in request.POST
+        if check_post_permission(user, None, use_script):
             post = Post(title=title, content=content, use_script=use_script, author=user)
             post.save()
         return redirect("list")
@@ -89,15 +96,15 @@ def edit(request, post_id):
                           'content': post.content
                       })
     elif request.method == 'POST':
+        user = request.user
         title = request.POST.get('title')
         content = request.POST.get('content')
-        use_script = (request.POST.get('use_script') == 'on')
-        user = request.user
-        if post.author == user:
-            if not use_script or user.has_perm('use_script'):
-                post.title = title
-                post.content = content
-                post.save()
+        use_script = 'use_script' in request.POST
+        if check_post_permission(user, post, use_script):
+            post.title = title
+            post.content = content
+            post.use_script = use_script
+            post.save()
         return redirect("list")
 
 def auth_index(request):
