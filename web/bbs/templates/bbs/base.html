@@ -26,7 +26,6 @@
                     <li id="navhome"><a href="/bbs/">Home</a></li>
                     <li id="navlist"><a href="/bbs/list">List</a></li>
                     <li id="navwrite"><a href="/bbs/write">Write</a></li>
-                    <li id="navregiset"><a href="/bbs/auth">Register</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user and request.user.is_authenticated %}
@@ -34,6 +33,7 @@
                     <li id="navlogin"><a href="/bbs/logout">Logout</a></li>
                     {% else %}
                     <li id="navlogin"><a href="/bbs/login">Login</a></li>
+                    <li id="navregiset"><a href="/bbs/auth">Register</a></li>
                     {% endif %}
                 </ul>
             </div><!--/.nav-collapse -->
