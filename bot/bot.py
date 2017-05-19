@@ -2,7 +2,7 @@ import sys
 import random
 import string
 from selenium import webdriver
-from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -21,8 +21,9 @@ def read_posting(driver):
             WebDriverWait(driver, 5).until(EC.title_contains('Read'))
             driver.execute_script('window.history.go(-1)')
 
+
 def bbs_login(driver):
-    # Login with admin user for TEST
+    #TODO: Change login procee. Login with admin user for TEST
     login_id = driver.find_element_by_id('username')
     login_id.send_keys('kwon')
 
@@ -40,24 +41,40 @@ def bbs_login(driver):
    
 
 def set_cookie(driver):
-    #rand_str = lambda n: ''.join([random.choice(string.lowercase) for i in range(n)])
     # Get a flag from the file which a flag updater is generated
     f = open('/tmp/IS521GovFlag', 'r')
     flag = f.read()
     f.close()
 
+    # Check flag size
     if len(flag) != 16:
         print "Invalid flag"
-        #driver.close()
-        #return
-
+        driver.close()
+        exit(1)
+    
+    #TODO: Set cross domain cookie
     driver.add_cookie({'name': 'flag', 'value': flag})
-    #driver.add_cookie({'name': 'flag', 'value': flag, 'domain': '.bank.com'})
+    #driver.add_cookie({'name': 'flag', 'value': flag, 'domain': 'bank.com'})
     print "Flag: " + flag
 
+
+def get_url(argv):
+    if len(argv) != 2:
+        print "Usage: " + argv[0] + " [goverment homepage URL]:[PORT]"
+        #exit(1)
+        #TODO: Uncomment an above line and Remove a below line which are for test
+        return 'http://127.0.0.1:12345/bbs/login/'
+    else:
+        return argv[1]
+
+
 if __name__ == '__main__':
-    driver = webdriver.Firefox()
-    site = 'http://127.0.0.1:12345/bbs/login/'
+    site = get_url(sys.argv)
+
+    profile = FirefoxProfile()
+    #profile.set_preference('security.fileuri.strict_origin_policy', False)
+
+    driver = webdriver.Firefox(profile)
     driver.implicitly_wait(3)
 
     driver.get(site)
