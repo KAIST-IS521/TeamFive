@@ -6,6 +6,7 @@ from .models import BoardUser, Post
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 def login(request):
     if request.method == 'GET':
@@ -19,7 +20,12 @@ def login(request):
             auth.login(request, user)
             return redirect("list")
         else:
-            return redirect("auth")
+            return redirect("auth_index")
+
+@login_required(login_url='/bbs/login')
+def logout(request):
+    auth.logout(request)
+    return redirect("index")
 
 def index(request):
     return render(request, 'bbs/index.html', {})
