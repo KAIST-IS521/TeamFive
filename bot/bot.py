@@ -6,9 +6,12 @@ from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+POSTING_XPATH = '/html/body/div/table/tbody/tr/td/a'
+FLAG_FILE = '/tmp/IS521GovFlag'
+
 def read_posting(driver):
     # Get post's links by inspecting html
-    links = driver.find_elements_by_xpath('/html/body/div/table/tbody/tr/td/a')
+    links = driver.find_elements_by_xpath(POSTING_XPATH)
     link_num = len(links)
 
     if(link_num == 0):
@@ -42,7 +45,7 @@ def bbs_login(driver):
 
 def set_cookie(driver):
     # Get a flag from the file which a flag updater is generated
-    f = open('/tmp/IS521GovFlag', 'r')
+    f = open(FLAG_FILE, 'r')
     flag = f.read()
     f.close()
 
