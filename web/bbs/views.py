@@ -30,10 +30,12 @@ def logout(request):
 def index(request):
     return render(request, 'bbs/index.html', {})
 
+@login_required(login_url='/bbs/login')
 def list(request):
     posts = Post.objects.all()
     return render(request, 'bbs/list.html', {'posts': posts})
 
+@login_required(login_url='/bbs/login')
 def write(request):
     if request.method == 'GET':
         return render(request, 'bbs/write.html', {})
@@ -47,6 +49,7 @@ def write(request):
         post.save()
         return redirect("list")
 
+@login_required(login_url='/bbs/login')
 def read(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
@@ -61,6 +64,7 @@ def read(request, post_id):
                       'author': post.author.username
                   })
 
+@login_required(login_url='/bbs/login')
 def delete(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
@@ -71,6 +75,7 @@ def delete(request, post_id):
     post.delete()
     return redirect('list')
 
+@login_required(login_url='/bbs/login')
 def edit(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
