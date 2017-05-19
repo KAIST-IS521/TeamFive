@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 #### Password auth related
@@ -129,7 +130,31 @@ def auth_resp(request):
         auth_id = request.session['auth_id']
         if verify_response(auth_nonce, auth_resp):
             print("Auth success for {}".format(auth_id))
+            request.session['auth_success'] = True
+            return redirect('auth_success')
         else:
             print("Auth failed")
+            request.session['auth_success'] = False
+            return redirect('auth_index')
+    else:
         return redirect('index')
+
+def auth_success(request):
+    success = request.session.get('auth_success')
+    auth_id = request.session.get('auth_id')
+    if success and auth_id:
+        if request.method == 'POST':
+            password = request.POST.get('password')
+            password_check = request.POST.get('password_check')
+            if password == password_check:
+                try:
+                    # Change password if the user already exists.
+                    user = User.objects.get(username=auth_id)
+                except ObjectDoesNotExist:
+                    # Create new user and set password if the user does not exists.
+                    user = User(username=auth_id)
+                user.set_password(password)
+                user.save()
+        else:
+            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
     return redirect('auth_index')

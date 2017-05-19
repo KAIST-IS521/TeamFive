@@ -13,4 +13,5 @@ urlpatterns = (
     url(r'^auth/$', views.auth_index, name='auth_index'),
     url(r'^auth/chal/$', views.auth_chal, name='auth_chal'),
     url(r'^auth/resp/$', views.auth_resp, name='auth_resp'),
+    url(r'^auth/success/$', views.auth_success, name='auth_success'),
 )

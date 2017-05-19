@@ -50,7 +50,15 @@ def do_auth(domain, github_id):
     # Login
     r = s.post(domain + '/bbs/auth/resp/',
             {'csrfmiddlewaretoken': token, 'auth_resp': resp})
+    token = get_csrf_token(r)
+
+    pw = '1234'
+    print('Setting your pw to "{}"'.format(pw))
+    s.post(domain + '/bbs/auth/success/',
+            {'csrfmiddlewaretoken': token, 'password': pw, 'password_check': pw})
+
     print('sessionid={}'.format(s.cookies['sessionid']))
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
