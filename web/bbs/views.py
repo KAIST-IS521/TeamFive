@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render
 
 from .auth import generate_challenge, get_service_pubkey, verify_response
-from .models import BoardUser, Post
+from .models import Post
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
@@ -44,8 +44,9 @@ def write(request):
         content = request.POST.get('content')
         use_script = (request.POST.get('use_script') == 'on')
         user = request.user
-        post = Post(title=title, content=content, use_script=use_script, author=user)
-        post.save()
+        if not use_script or user.has_perm('use_script'):
+            post = Post(title=title, content=content, use_script=use_script, author=user)
+            post.save()
         return redirect("list")
 
 @login_required(login_url='/bbs/login')
@@ -93,9 +94,10 @@ def edit(request, post_id):
         use_script = (request.POST.get('use_script') == 'on')
         user = request.user
         if post.author == user:
-            post.title = title
-            post.content = content
-            post.save()
+            if not use_script or user.has_perm('use_script'):
+                post.title = title
+                post.content = content
+                post.save()
         return redirect("list")
 
 def auth_index(request):
