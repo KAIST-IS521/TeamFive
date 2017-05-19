@@ -5,13 +5,13 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     allow_script = models.BooleanField()
-    author = models.ForeignKey('BoardUser')
+    author = models.ForeignKey('auth.User')
 
     def __str__(self):
         return "Post '{}'".format(self.title)
 
 class BoardUser(models.Model):
-    username = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     notarized = models.BooleanField()
 
     def __str__(self):

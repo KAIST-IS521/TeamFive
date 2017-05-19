@@ -43,9 +43,8 @@ def write(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = (request.POST.get('use_script') == 'on')
-        # TODO: Remove this and use current user from session.
-        bogus_user = BoardUser.objects.all()[0]
-        post = Post(title=title, content=content, allow_script=use_script, author=bogus_user)
+        user = request.user
+        post = Post(title=title, content=content, allow_script=use_script, author=user)
         post.save()
         return redirect("list")
 
@@ -70,9 +69,8 @@ def delete(request, post_id):
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
         return redirect('list')
-    #if post.author.username != request.session['auth_id']:
-    #    return redirect('list')
-    post.delete()
+    if post.author == request.user:
+        post.delete()
     return redirect('list')
 
 @login_required(login_url='/bbs/login')
@@ -93,11 +91,11 @@ def edit(request, post_id):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = (request.POST.get('use_script') == 'on')
-        # TODO: Remove this and use current user from session.
-        bogus_user = BoardUser.objects.all()[0]
-        post.title = title
-        post.content = content
-        post.save()
+        user = request.user
+        if post.author == user:
+            post.title = title
+            post.content = content
+            post.save()
         return redirect("list")
 
 def auth_index(request):
