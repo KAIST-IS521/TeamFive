@@ -1,25 +1,23 @@
 {% extends 'bbs/base.html' %}
 
 {% block title %}
-
+Read post
 {% endblock %}
 
 {% block content %}
 <h1>Read post</h1>
 
-<b>title:</b> {{ title }} <br>
-<b>content:</b> {{ content }} <br>
-<b>author: </b> {{ author }} <br>
-<button onclick="history.back();" type="button" class="btn btn-success">Back</button>
-<button type="button" id="movedelete" class="btn btn-success">Delete</button>
-<button type="button" id="moveedit" class="btn btn-success">Edit</button>
-
-<script type="text/javascript">
-    document.getElementById("movedelete").onclick = function () {
-        location.href = "/bbs/delete/".concat( {{id }});
-    };
-    document.getElementById("moveedit").onclick = function () {
-        location.href = "/bbs/edit/".concat( {{id }});
-    }
-</script>
+<b>title:</b> {{ post.title }} <br>
+<b>content:</b> {{ post.content }} <br>
+<b>author: </b> {{ post.author }} <br>
+<b>Use script:</b> {% if post.use_script %}yes{% else %}no{% endif %}<br>
+<a href="{% url 'list' %}" style="color:white">
+    <button type="button" class="btn btn-success">Back</button>
+</a>
+<a href="{% url 'delete' post.id %}" style="color:white">
+    <button type="button" class="btn btn-success">Delete</button>
+</a>
+<a href="{% url 'edit' post.id %}" style="color:white">
+    <button type="button" class="btn btn-success">Edit</button>
+</a>
 {% endblock %}

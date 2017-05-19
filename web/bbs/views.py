@@ -8,6 +8,9 @@ from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 
+
+#### Password auth related
+
 def login(request):
     if request.method == 'GET':
         return render(request, 'bbs/login.html', {})
@@ -15,7 +18,6 @@ def login(request):
         username = request.POST.get('username', '')
         password = request.POST.get('password', '')
         user = auth.authenticate(username=username, password=password)
-
         if user is not None:
             auth.login(request, user)
             return redirect("list")
@@ -26,6 +28,9 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return redirect("index")
+
+
+#### BBS functions
 
 def index(request):
     return render(request, 'bbs/index.html', {})
@@ -62,14 +67,7 @@ def read(request, post_id):
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
         return redirect('list')
-    return render(request,
-                  'bbs/read.html',
-                  {
-                      'id': post.id,
-                      'title': post.title,
-                      'content': post.content,
-                      'author': post.author.username
-                  })
+    return render(request, 'bbs/read.html', {'post': post})
 
 @login_required(login_url='/bbs/login')
 def delete(request, post_id):
@@ -88,11 +86,7 @@ def edit(request, post_id):
     except ObjectDoesNotExist:
         return redirect('list')
     if request.method == 'GET':
-        return render(request,
-                      'bbs/edit.html',
-                      {
-                          'post': post,
-                      })
+        return render(request, 'bbs/edit.html', {'post': post})
     elif request.method == 'POST':
         user = request.user
         title = request.POST.get('title')
@@ -104,6 +98,9 @@ def edit(request, post_id):
             post.use_script = use_script
             post.save()
         return redirect("list")
+
+
+#### PGP auth related
 
 def auth_index(request):
     return render(request, 'bbs/auth_index.html', {})
