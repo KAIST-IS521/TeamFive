@@ -91,9 +91,7 @@ def edit(request, post_id):
         return render(request,
                       'bbs/edit.html',
                       {
-                          'id': post.id,
-                          'title': post.title,
-                          'content': post.content
+                          'post': post,
                       })
     elif request.method == 'POST':
         user = request.user
