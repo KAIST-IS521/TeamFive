@@ -1,0 +1,23 @@
+{% extends 'bbs/base.html' %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block content %}
+    <h1>Please Login!</h1>
+
+    <br>
+    {% if form.errors %}
+        <p class = "error"> Sorry, that's not a valid username or password </p>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="post" class="form-inline">
+        {% csrf_token %}
+        <label for="username">User name(github id): </label>
+        <input type="text" name="username" id="username">
+        <label for="password">Password: </label>
+        <input type="text" name="password" id="password">
+        <button type="submit" class="btn btn-default">Login</button>
+    </form>
+{% endblock %}
