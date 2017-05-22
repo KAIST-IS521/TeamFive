@@ -76,7 +76,8 @@ def read(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
     return render(request, 'bbs/read.html', {'post': post})
 
 @login_required(login_url='/bbs/login')
@@ -84,17 +85,23 @@ def delete(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
     if post.author == request.user:
         post.delete()
-    return render(request, 'bbs/error.html',{'delete_error': True}) 
+    else:
+        error_msg = 'You are not an owner of the post.\
+                     Only author can delete it.'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+    return redirect('list')
 
 @login_required(login_url='/bbs/login')
 def edit(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
     if request.method == 'GET':
         return render(request, 'bbs/edit.html', {'post': post})
     elif request.method == 'POST':
