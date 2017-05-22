@@ -49,10 +49,14 @@ def list(request):
 
 def check_post_permission(user, post, use_script):
     if use_script and not user.has_perm('bbs.use_script'):
-        return False
+        return False, 'Normal user cannot write a post that contains\
+                       Javascript. Please uncheck the \'Use Javascript\''
     if post and post.author != user:
-        return False
-    return True
+        return False, 'You are not an owner of the post.\
+                       Only author can do it.'
+    if post.title == '':
+        return False, 'We need a title.'
+    return True, ''
 
 @login_required(login_url='/bbs/login')
 def write(request):
@@ -66,14 +70,13 @@ def write(request):
         if not use_script:
             title = escape(title)
             content = escape(content)
-        if check_post_permission(user, None, use_script):
             post = Post(title=title, content=content, use_script=use_script, author=user)
+        can_write, error_msg = check_post_permission(user, post, use_script)
+        if can_write:
             post.save()
+            return redirect("list")
         else:
-            error_msg = 'Normal user cannot write a post that contains\
-                         Javascript. Please uncheck the \'Use Javascript\''
             return render(request, 'bbs/error.html', {'error_msg': error_msg})
-        return redirect("list")
 
 @login_required(login_url='/bbs/login')
 def read(request, post_id):
@@ -91,13 +94,12 @@ def delete(request, post_id):
     except ObjectDoesNotExist:
         error_msg = 'There is no post that id is ' + post_id
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
-    if post.author == request.user:
+    can_delete, error_msg = check_post_permission(request.user, post, None)
+    if can_delete:
         post.delete()
+        return redirect('list')
     else:
-        error_msg = 'You are not an owner of the post.\
-                     Only author can delete it.'
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
-    return redirect('list')
 
 @login_required(login_url='/bbs/login')
 def edit(request, post_id):
@@ -106,13 +108,13 @@ def edit(request, post_id):
     except ObjectDoesNotExist:
         error_msg = 'There is no post that id is ' + post_id
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
-    if post.author != request.user:
-        error_msg = 'You are not an owner of the post.\
-                     Only author can edit it.'
-        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
     if request.method == 'GET':
-        return render(request, 'bbs/edit.html', {'post': post})
+        can_edit, error_msg = check_post_permission(request.user, post, None)
+        if can_edit:
+            return render(request, 'bbs/edit.html', {'post': post})
+        else:
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
     elif request.method == 'POST':
         user = request.user
         title = request.POST.get('title')
@@ -121,16 +123,15 @@ def edit(request, post_id):
         if not use_script:
             title = escape(title)
             content = escape(content)
-        if check_post_permission(user, post, use_script):
+        can_edit, error_msg = check_post_permission(user, post, use_script)
+        if can_edit:
             post.title = title
             post.content = content
             post.use_script = use_script
             post.save()
+            return redirect("list")
         else:
-            error_msg = 'Normal user cannot write a post that contains\
-                         Javascript. Please uncheck the \'Use Javascript\''
             return render(request, 'bbs/error.html', {'error_msg': error_msg})
-        return redirect("list")
 
 
 #### PGP auth related
