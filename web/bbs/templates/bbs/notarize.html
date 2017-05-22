@@ -20,7 +20,7 @@ Get notarized
     <form action="{% url 'notarize' %}" method="post">
         <p>
         <div>Send signed document:</div>
-        <textarea class="form-control" name="document"></textarea>
+        <textarea class="form-control" name="proof"></textarea>
         </p>
 
         {% csrf_token %}

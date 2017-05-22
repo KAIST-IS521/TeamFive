@@ -1,6 +1,11 @@
 from django.shortcuts import redirect, render
 
-from .auth import generate_challenge, get_service_pubkey, verify_response
+from .auth import (
+        generate_challenge,
+        get_service_pubkey,
+        verify_response,
+        verify_notary,
+)
 from .models import Post
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -168,4 +173,13 @@ def auth_success(request):
 
 @login_required(login_url='/bbs/login')
 def notarize(request):
-    return render(request, 'bbs/notarize.html', {})
+    if request.method == 'POST':
+        auth_id = request.user.username
+        proof = request.POST.get('proof')
+        if verify_notary(auth_id, proof):
+            print("{} is notarized.".format(auth_id))
+        else:
+            print("{} is not notarized.".format(auth_id))
+        return redirect('list')
+    else:
+        return render(request, 'bbs/notarize.html', {})

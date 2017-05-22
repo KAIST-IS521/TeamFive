@@ -1,3 +1,4 @@
+import json
 import os
 import random
 import re
@@ -59,3 +60,50 @@ def verify_response(auth_nonce, auth_resp):
     pt = gpg.decrypt(auth_resp, passphrase=passphrase)
     resp_nonce = pt.data.decode('utf-8').strip()
     return resp_nonce == auth_nonce
+
+def verify_notary(auth_id, proof):
+    '''
+    Given PGP-signed document proof, check if it is
+    signed by the notary and the content is legit.
+    '''
+    # Load notary public key
+    gpg = gnupg.GPG()
+    key_path = settings.NOTARY_PUBKEY
+    with open(key_path, 'r') as f:
+        notary_key = gpg.import_keys(f.read())
+
+    # Unpack the payload
+    payload = gpg.decrypt(proof)
+    try:
+        document = json.loads(payload.data.decode('utf-8'))
+        proof_id = document['id']
+        proof_pubkey = gpg.import_keys(document['pubkey'])
+    except ValueError:
+        return False
+    except KeyError:
+        return False
+
+    # Compare the requested person and the id in the payload.
+    if auth_id != proof_id:
+        return False
+
+    # Load the known public key
+    key_name = '{}.pub'.format(proof_id)
+    key_path = os.path.join(settings.STUDENT_PUBKEY_DIR, key_name)
+    try:
+        with open(key_path, "r") as f:
+            known_pubkey = gpg.import_keys(f.read())
+    except FileNotFoundError:
+        return False
+
+    # Check the public key
+    if proof_pubkey.fingerprints[0] != known_pubkey.fingerprints[0]:
+        return False
+
+    # Check the signature
+    verify = gpg.verify(proof)
+    if not verify:
+        return False
+    if verify.pubkey_fingerprint != notary_key.fingerprints[0]:
+        return False
+    return True
