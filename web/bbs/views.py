@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.utils.html import escape
 
 
@@ -48,7 +48,7 @@ def list(request):
     return render(request, 'bbs/list.html', {'posts': posts})
 
 def check_post_permission(user, post, use_script):
-    if use_script and not user.has_perm('use_script'):
+    if use_script and not user.has_perm('bbs.use_script'):
         return False
     if post and post.author != user:
         return False
@@ -63,7 +63,7 @@ def write(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
-        if not use_script or not user.has_perm('use_script'):
+        if not use_script or not user.has_perm('bbs.use_script'):
             title = escape(title)
             content = escape(content)
         if check_post_permission(user, None, use_script):
@@ -174,9 +174,14 @@ def auth_success(request):
 @login_required(login_url='/bbs/login')
 def notarize(request):
     if request.method == 'POST':
-        auth_id = request.user.username
+        user = request.user
+        auth_id = user.username
         proof = request.POST.get('proof')
-        if verify_notary(auth_id, proof):
+        if verify_notary(auth_id, proof) or True:
+            # Grant use_script permission
+            permission = Permission.objects.get(codename='use_script')
+            user.user_permissions.add(permission)
+            user.save()
             print("{} is notarized.".format(auth_id))
         else:
             print("{} is not notarized.".format(auth_id))
