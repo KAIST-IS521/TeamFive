@@ -109,6 +109,9 @@ def edit(request, post_id):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
+        if not use_script or not user.has_perm('bbs.use_script'):
+            title = escape(title)
+            content = escape(content)
         if check_post_permission(user, post, use_script):
             post.title = title
             post.content = content
