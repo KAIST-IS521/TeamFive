@@ -6,5 +6,13 @@ Error!
 {% endblock %}
 
 {% block content %}
+	{% if delete_error %}
+	<h1>Error: Delete Fail </h1>
+	<h2>You are not author of post</h2>
+	{% endif %}
+
+	{% if not delete_error %}
 	<h1>Simple Static Error Page</h1>
+	{% endif %}
+
 {% endblock %}

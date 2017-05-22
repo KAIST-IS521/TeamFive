@@ -87,7 +87,7 @@ def delete(request, post_id):
         return redirect('list')
     if post.author == request.user:
         post.delete()
-    return render(request, 'bbs/error.html',{}) 
+    return render(request, 'bbs/error.html',{'delete_error': True}) 
 
 @login_required(login_url='/bbs/login')
 def edit(request, post_id):
