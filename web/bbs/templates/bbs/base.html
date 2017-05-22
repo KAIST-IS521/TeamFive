@@ -29,7 +29,14 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user and request.user.is_authenticated %}
-                    <li id="navusername"><a href="#">Hi {{ request.user.username }}</a></li>
+                    <li id="navusername">
+                        <a href="#">
+                            Hi {{ request.user.username }}
+                            {% if perms.bbs.use_script %}
+                              [Notarized]
+                            {% endif %}
+                        </a>
+                    </li>
                     <li id="navnotarize"><a href="/bbs/notarize">Get notarized</a></li>
                     <li id="navlogin"><a href="/bbs/logout">Logout</a></li>
                     {% else %}
