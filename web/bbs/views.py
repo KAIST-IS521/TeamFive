@@ -162,3 +162,10 @@ def auth_success(request):
         else:
             return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
     return redirect('auth_index')
+
+
+### Notary related
+
+@login_required(login_url='/bbs/login')
+def notarize(request):
+    return render(request, 'bbs/notarize.html', {})
