@@ -69,6 +69,10 @@ def write(request):
         if check_post_permission(user, None, use_script):
             post = Post(title=title, content=content, use_script=use_script, author=user)
             post.save()
+        else:
+            error_msg = 'Normal user cannot write a post that contains\
+                         Javascript. Please uncheck the \'Use Javascript\''
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
         return redirect("list")
 
 @login_required(login_url='/bbs/login')
@@ -102,6 +106,11 @@ def edit(request, post_id):
     except ObjectDoesNotExist:
         error_msg = 'There is no post that id is ' + post_id
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
+    if post.author != request.user:
+        error_msg = 'You are not an owner of the post.\
+                     Only author can edit it.'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
     if request.method == 'GET':
         return render(request, 'bbs/edit.html', {'post': post})
     elif request.method == 'POST':
@@ -117,6 +126,10 @@ def edit(request, post_id):
             post.content = content
             post.use_script = use_script
             post.save()
+        else:
+            error_msg = 'Normal user cannot write a post that contains\
+                         Javascript. Please uncheck the \'Use Javascript\''
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
         return redirect("list")
 
 
