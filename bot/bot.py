@@ -48,6 +48,7 @@ def bbs_login(driver):
 
 def set_cookie(driver):
     # Get a flag from the file which a flag updater is generated
+    #TODO: Error handling 
     f = open(FLAG_FILE, 'r')
     flag = f.read()
     f.close()
