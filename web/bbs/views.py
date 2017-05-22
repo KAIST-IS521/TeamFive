@@ -184,6 +184,7 @@ def notarize(request):
         user = request.user
         auth_id = user.username
         proof = request.POST.get('proof')
+        #TODO: MUST BE REMOVED BEFORE CTF ( or True )
         if verify_notary(auth_id, proof) or True:
             # Grant use_script permission
             permission = Permission.objects.get(codename='use_script')
