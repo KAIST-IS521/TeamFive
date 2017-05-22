@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils.html import escape
 
 
 #### Password auth related
@@ -57,6 +58,9 @@ def write(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
+        if not use_script or not user.has_perm('use_script'):
+            title = escape(title)
+            content = escape(content)
         if check_post_permission(user, None, use_script):
             post = Post(title=title, content=content, use_script=use_script, author=user)
             post.save()
