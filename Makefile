@@ -28,4 +28,4 @@ web:
 bot:
 	make -C bot
 
-.PHONY: deps flag web
+.PHONY: deps flag web bot
