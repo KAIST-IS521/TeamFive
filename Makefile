@@ -1,4 +1,4 @@
-all: pub deps flag web
+all: pub deps flag web bot
 
 KEY_ROOT?=/opt
 
@@ -24,5 +24,8 @@ flag:
 
 web:
 	make -C web
+
+bot:
+	make -C bot
 
 .PHONY: deps flag web
