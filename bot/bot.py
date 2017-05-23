@@ -18,13 +18,15 @@ ADMIN_PW = ''
 SITE = ''
 DOMAIN_NAME = ''
 
+READ_TIMEOUT = 5
+
 def read_posting(driver):
     # Get post's links by inspecting html
     links = driver.find_elements_by_xpath(POSTING_XPATH)
     link_num = len(links)
 
     if(link_num == 0):
-        print "Caanot read any post."
+        print "Canot read any post."
 
     # Read each post and go back to bbs list page 
     else:
@@ -34,7 +36,11 @@ def read_posting(driver):
                 links[i].click()
                 WebDriverWait(driver, 5).until(EC.title_contains('Read'))
                 # Wait 1 second after closing all alert boxes
+                s_time = time.time()
                 while WebDriverWait(driver, 1).until(EC.alert_is_present()):
+                    if time.time() - s_time > READ_TIMEOUT:
+                        driver.quite()
+                        driver.execute_script('window.history.go(-1)')
                     alert = driver.switch_to_alert()
                     alert.accept()
             except:
