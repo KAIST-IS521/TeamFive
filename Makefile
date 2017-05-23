@@ -1,4 +1,4 @@
-all: pub deps flag web bot
+all: deps flag web bot pub
 
 KEY_ROOT?=/opt
 

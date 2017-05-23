@@ -3,10 +3,21 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
 
-    {% load static %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="{% static "/css/my.css" %}">
+    <style>
+        html, body { height:100%;}
+
+        .starter-template {
+            padding: 80px 15px 0px 15px;
+            text-align: center;
+            height:100%;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
