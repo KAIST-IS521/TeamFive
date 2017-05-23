@@ -137,15 +137,16 @@ def read_config(conf_file):
 
 if __name__ == '__main__':
     read_config(CONFIG_FILE)
+    while True:
+        driver = webdriver.Firefox()
+        set_driver(driver)
 
-    driver = webdriver.Firefox()
-    set_driver(driver)
+        visit_website(driver, DOMAIN_NAME)
+        set_cookie(driver, DOMAIN_NAME)
 
-    visit_website(driver, DOMAIN_NAME)
-    set_cookie(driver, DOMAIN_NAME)
+        visit_website(driver, SITE)
+        bbs_login(driver)
+        read_posting(driver)
 
-    visit_website(driver, SITE)
-    bbs_login(driver)
-    read_posting(driver)
-
-    driver.close()
+        driver.close()
+        time.sleep(5)
