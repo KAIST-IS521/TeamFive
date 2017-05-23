@@ -42,10 +42,14 @@ int main(int argc, char** argv){
 	}
 	else{
 
-		if(login() < 0){
+		//parse_csv(id,password)
+
+		if(login() < 0){	//login(id, password)
+			printf("Login error\n");
 			return 1;
 		}
 		else{
+			printf("Login successfully\n");
 			return 0;
 		}
 			
@@ -68,7 +72,7 @@ int connecturl(char* ip, int port){
 
 	if(curl){
 
-		curl_easy_setopt(curl, CURLOPT_URL, "http://www.example.com/");
+		curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
 
@@ -76,21 +80,27 @@ int connecturl(char* ip, int port){
 		res = curl_easy_perform(curl);
 		
 		if(res != CURLE_OK) 
-			fprintf(stderr, "curl,easy_perform() failed: %s\n", curl_easy_strerror(res));
+			{
+				fprintf(stderr, "curl,easy_perform() failed: %s\n", curl_easy_strerror(res));
+
+			
+				return -1;
+			}
 		else{
 
-			printf("%lu\n", data.size);
+			printf("Enter the bbs page successfully\n");
+
+			
+			return 0;
 
 		}
 
 
-		curl_easy_cleanup(curl);
 	}
 
-	return -1;
 }
 
-int login(){
+int login(char* ip, int port){
 
 
 	return 0;
