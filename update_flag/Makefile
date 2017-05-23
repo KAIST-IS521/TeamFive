@@ -1,7 +1,7 @@
 all: setup
 
 setup: env
-	. env/bin/activate && pip install -r requirement.txt
+	. env/bin/activate && sudo pip install -r requirement.txt
 
 env:
 	virtualenv --python=`which python2.7` env
