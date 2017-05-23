@@ -154,6 +154,10 @@ def auth_chal(request):
                 'service_pubkey': service_pubkey
             }
             return render(request, 'bbs/auth_chal.html', context)
+        else:
+            error_msg = 'Are you really a student in is511 class?\
+                         If yes, did you upload your public key on the github?'
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
     return redirect('auth_index')
 
 def auth_resp(request):
@@ -168,9 +172,10 @@ def auth_resp(request):
         else:
             print("Auth failed")
             request.session['auth_success'] = False
-            return redirect('auth_index')
+            error_msg = 'Authentication Failed, Are you really ' + auth_id + '?'
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
     else:
-        return redirect('index')
+        return redirect('auth_index')
 
 def auth_success(request):
     success = request.session.get('auth_success')
@@ -188,9 +193,15 @@ def auth_success(request):
                     user = User(username=auth_id)
                 user.set_password(password)
                 user.save()
+                return redirect('auth_index')
+            else:
+                error_msg = 'password dose not match the comfirm password.'
+                return render(request, 'bbs/error.html', {'error_msg': error_msg})
         else:
             return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
-    return redirect('auth_index')
+    else:
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 
 ### Notary related
