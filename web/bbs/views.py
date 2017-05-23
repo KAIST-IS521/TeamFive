@@ -67,10 +67,13 @@ def write(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
+
         if not use_script:
             title = escape(title)
             content = escape(content)
+
         post = Post(title=title, content=content, use_script=use_script, author=user)
+
         can_write, error_msg = check_post_permission(user, post, use_script)
         if can_write:
             post.save()
@@ -85,6 +88,7 @@ def read(request, post_id):
     except ObjectDoesNotExist:
         error_msg = 'There is no post that id is ' + post_id
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
     return render(request, 'bbs/read.html', {'post': post})
 
 @login_required(login_url='/bbs/login')
@@ -94,6 +98,7 @@ def delete(request, post_id):
     except ObjectDoesNotExist:
         error_msg = 'There is no post that id is ' + post_id
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
     can_delete, error_msg = check_post_permission(request.user, post, None)
     if can_delete:
         post.delete()
@@ -120,9 +125,11 @@ def edit(request, post_id):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
+
         if not use_script:
             title = escape(title)
             content = escape(content)
+
         can_edit, error_msg = check_post_permission(user, post, use_script)
         if can_edit:
             post.title = title
@@ -155,10 +162,10 @@ def auth_chal(request):
             }
             return render(request, 'bbs/auth_chal.html', context)
         else:
-            error_msg = 'Are you really a student in is511 class?\
-                         If yes, did you upload your public key on the github?'
-            return render(request, 'bbs/error.html', {'error_msg': error_msg})
-    return redirect('auth_index')
+            return render(request, 'bbs/auth_index.html', {'error':True})
+    else:
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 def auth_resp(request):
     if request.method == 'POST':
@@ -175,13 +182,16 @@ def auth_resp(request):
             error_msg = 'Authentication Failed, Are you really ' + auth_id + '?'
             return render(request, 'bbs/error.html', {'error_msg': error_msg})
     else:
-        return redirect('auth_index')
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 def auth_success(request):
     success = request.session.get('auth_success')
     auth_id = request.session.get('auth_id')
     if success and auth_id:
-        if request.method == 'POST':
+        if request.method == 'GET':
+            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
+        elif request.method == 'POST':
             password = request.POST.get('password')
             password_check = request.POST.get('password_check')
             if password == password_check:
@@ -193,12 +203,11 @@ def auth_success(request):
                     user = User(username=auth_id)
                 user.set_password(password)
                 user.save()
-                return redirect('auth_index')
+                return redirect('login')
             else:
-                error_msg = 'password dose not match the comfirm password.'
-                return render(request, 'bbs/error.html', {'error_msg': error_msg})
-        else:
-            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
+                return render(request,
+                              'bbs/auth_success.html',
+                              {'auth_id': auth_id, 'error':True})
     else:
         error_msg = 'Invalid access'
         return render(request, 'bbs/error.html', {'error_msg': error_msg})
@@ -208,7 +217,9 @@ def auth_success(request):
 
 @login_required(login_url='/bbs/login')
 def notarize(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render(request, 'bbs/notarize.html', {})
+    elif request.method == 'POST':
         user = request.user
         auth_id = user.username
         proof = request.POST.get('proof')
@@ -219,8 +230,7 @@ def notarize(request):
             user.user_permissions.add(permission)
             user.save()
             print("{} is notarized.".format(auth_id))
+            return redirect('list')
         else:
             print("{} is not notarized.".format(auth_id))
-        return redirect('list')
-    else:
-        return render(request, 'bbs/notarize.html', {})
+            return render(request, 'bbs/notarize.html', {'error': True})

@@ -7,7 +7,12 @@ Auth
 {% block content %}
 <h1>Auth yourself to register!</h1>
 
-<br>
+{% if error %}
+<div class="alert alert-danger">
+    Are you really a student in is511 class?
+    If yes, did you upload your public key on the github?'
+</div>
+{% endif %}
 
 <form action="{% url 'auth_chal' %}" method="post" class="form-inline">
     <div class="form-group">

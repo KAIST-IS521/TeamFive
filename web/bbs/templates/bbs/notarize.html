@@ -7,6 +7,12 @@ Get notarized
 {% block content %}
 <h1>Are you government official {{ request.user.username }}?</h1>
 
+{% if error %}
+<div class="alert alert-danger">
+    Sorry, you didn't get notorized by notary service.
+</div>
+{% endif %}
+
 <div class="col-sm-8 col-sm-offset-2">
     <div>Sign following JSON document:</div>
     <pre class="text-left">
