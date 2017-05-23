@@ -1,7 +1,7 @@
+import os
 import sys
-import random
-import string
 import time
+import ConfigParser
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,12 +9,14 @@ from selenium.webdriver.support import expected_conditions as EC
 
 POSTING_XPATH = '/html/body/div/table/tbody/tr/td/a'
 FLAG_FILE = '/tmp/IS521GovFlag'
-#Below two variables are temporary for test
-ADMIN_ID = 'kwon'
-ADMIN_PW = 'kwon1234'
-SITE = "127.0.0.1:12345"
-DOMAIN_NAME = "bank.com"
 LOGIN_URI = '/bbs/login/'
+CONFIG_FILE = 'config.conf'
+SECTION = 'government'
+#Below global variables will be set after reading a config file
+ADMIN_ID = ''
+ADMIN_PW = ''
+SITE = ''
+DOMAIN_NAME = ''
 
 def read_posting(driver):
     # Get post's links by inspecting html
@@ -24,8 +26,8 @@ def read_posting(driver):
     if(link_num == 0):
         print "Caanot read any post."
 
+    # Read each post and go back to bbs list page 
     else:
-        # Read each post and go back to bbs list page 
         for i in range(len(links)):
             try:
                 WebDriverWait(driver, 5).until(EC.title_contains('list'))
@@ -40,8 +42,8 @@ def read_posting(driver):
  
 
 def bbs_login(driver):
+    # Visit login page and login
     visit_website(driver, SITE + LOGIN_URI)
-    #TODO: Change login procee. Login with admin user for TEST
     login_id = driver.find_element_by_id('username')
     login_id.send_keys(ADMIN_ID)
 
@@ -79,19 +81,10 @@ def set_cookie(driver, domain):
     # Set a cookie with the flag value
     try:   
         driver.add_cookie({'name': 'flag', 'value': flag, 'domain': domain})
-        print "Set-cookie: Flag=" + flag
+        print "Set-cookie: flag=" + flag + ", domain=" + domain
     except:
         print "Cannot set a cookie."
 
-
-def get_url(argv):
-    if len(argv) != 2:
-        print "Usage: " + argv[0] + " [goverment homepage URL]:[PORT]"
-        #exit(1)
-        #TODO: Uncomment an above line and Remove a below line which are for test
-        return '127.0.0.1:12345/bbs/login/'
-    else:
-        return argv[1]
 
 def visit_website(driver, domain):
     driver.get('http://' + domain)
@@ -103,8 +96,47 @@ def set_driver(driver):
     driver.set_window_size(1000, 600)
    
 
+def write_config():
+    # Write a config file
+    print "Making config file..."
+    global ADMIN_ID, ADMIN_PW, SITE, DOMAIN_NAME
+    config = ConfigParser.RawConfigParser()
+    config.add_section(SECTION)
+  
+    ADMIN_ID  = raw_input("Enter government website admin ID: ")
+    ADMIN_PW = raw_input("Enter government website admin PW: ")
+    SITE = raw_input("Enter government website address: http://")
+    DOMAIN_NAME = raw_input("Enter domain of bank.com: http://")
+    config.set(SECTION, 'ADMIN_ID', ADMIN_ID)
+    config.set(SECTION, 'ADMIN_PW', ADMIN_PW)
+    config.set(SECTION, 'SITE', SITE)
+    config.set(SECTION, 'DOMAIN_NAME', DOMAIN_NAME)
+
+    with open(CONFIG_FILE, 'wb') as conf_file:
+        config.write(conf_file)
+  
+
+def read_config(conf_file):
+    # Read a config file. If not exist, write it.
+    global ADMIN_ID, ADMIN_PW, SITE, DOMAIN_NAME
+    if os.path.isfile(conf_file):
+        try:
+            config = ConfigParser.ConfigParser()
+            config.read(conf_file)
+            ADMIN_ID = config.get(SECTION, 'ADMIN_ID')
+            ADMIN_PW = config.get(SECTION, 'ADMIN_PW')
+            SITE = config.get(SECTION, 'SITE')
+            DOMAIN_NAME = config.get(SECTION, 'DOMAIN_NAME')            
+        except:
+            print conf_file + " is an invalid config file."
+            write_config()
+    else:
+        print "Config file is not exist."
+        write_config()
+
+
 if __name__ == '__main__':
-    site = get_url(sys.argv)
+    read_config(CONFIG_FILE)
 
     driver = webdriver.Firefox()
     set_driver(driver)
@@ -116,4 +148,4 @@ if __name__ == '__main__':
     bbs_login(driver)
     read_posting(driver)
 
-    #driver.close()
+    driver.close()
