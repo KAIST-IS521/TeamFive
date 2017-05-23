@@ -70,7 +70,7 @@ def write(request):
         if not use_script:
             title = escape(title)
             content = escape(content)
-            post = Post(title=title, content=content, use_script=use_script, author=user)
+        post = Post(title=title, content=content, use_script=use_script, author=user)
         can_write, error_msg = check_post_permission(user, post, use_script)
         if can_write:
             post.save()
