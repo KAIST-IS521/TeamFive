@@ -1,4 +1,20 @@
-all: deps flag web
+all: pub deps flag web
+
+KEY_ROOT?=/opt
+
+pub:
+	mkdir -p $(KEY_ROOT)/pub $(KEY_ROOT)/priv $(KEY_ROOT)/student
+	cp ./key/*.pub $(KEY_ROOT)/pub/
+	cp ./key/student/*.pub $(KEY_ROOT)/student/ 
+	cp ./key/*.key $(KEY_ROOT)/priv/
+	echo "from .prod import *" > ./web/gov/settings/local.py
+	echo "" >> ./web/gov/settings/local.py
+	echo "SECRET_KEY='`head /dev/urandom | base64 | head -n1`'" >> ./web/gov/settings/local.py
+	echo "NOTARY_PUBKEY='$(KEY_ROOT)/pub/notary.pub'" >> ./web/gov/settings/local.py
+	echo "STUDENT_PUBKEY_DIR='$(KEY_ROOT)/student'" >> ./web/gov/settings/local.py
+	echo "SERVICE_PUBKEY='$(KEY_ROOT)/pub/service.pub'" >> ./web/gov/settings/local.py
+	echo "SERVICE_PRIVKEY='$(KEY_ROOT)/priv/service.key'" >> ./web/gov/settings/local.py
+	echo "ALLOWED_HOSTS = ['*']" >> ./web/gov/settings/local.py
 
 deps:
 	sudo bash install-deps.bash

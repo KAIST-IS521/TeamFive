@@ -9,6 +9,7 @@ Written in Python 3 and Django 1.11.
 
 - Python 3
 - Virtualenv (recommended)
+- gpg
 
 
 ## Config
@@ -20,6 +21,7 @@ And then put following variables:
 
 - `SECRET_KEY`: Long random string.
 - `STUDENT_PUBKEY_DIR`: Absolute path to the directory that contains all students public keys.
+- `NOTARY_PUBKEY`: Absolute path to the public key of notary service.
 - `SERVICE_PUBKEY`: Absolute path to the public key of this service.
 - `SERVICE_PRIVKEY`: Absolute path to the private key of this service.
 - `SERVICE_PRIVKEY_PASSPHRASE`: Passphrase for the private key of this service.

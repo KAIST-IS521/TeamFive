@@ -1,13 +1,18 @@
 from django.shortcuts import redirect, render
 
-from .auth import generate_challenge, get_service_pubkey, verify_response
+from .auth import (
+        generate_challenge,
+        get_service_pubkey,
+        verify_response,
+        verify_notary,
+)
 from .models import Post
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.utils.html import escape
 
 
@@ -43,11 +48,15 @@ def list(request):
     return render(request, 'bbs/list.html', {'posts': posts})
 
 def check_post_permission(user, post, use_script):
-    if use_script and not user.has_perm('use_script'):
-        return False
+    if use_script and not user.has_perm('bbs.use_script'):
+        return False, 'Normal user cannot write a post that contains\
+                       Javascript. Please uncheck the \'Use Javascript\''
     if post and post.author != user:
-        return False
-    return True
+        return False, 'You are not an owner of the post.\
+                       Only author can do it.'
+    if post.title == '':
+        return False, 'We need a title.'
+    return True, ''
 
 @login_required(login_url='/bbs/login')
 def write(request):
@@ -58,20 +67,28 @@ def write(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
-        if not use_script or not user.has_perm('use_script'):
+
+        if not use_script:
             title = escape(title)
             content = escape(content)
-        if check_post_permission(user, None, use_script):
-            post = Post(title=title, content=content, use_script=use_script, author=user)
+
+        post = Post(title=title, content=content, use_script=use_script, author=user)
+
+        can_write, error_msg = check_post_permission(user, post, use_script)
+        if can_write:
             post.save()
-        return redirect("list")
+            return redirect("list")
+        else:
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 @login_required(login_url='/bbs/login')
 def read(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
     return render(request, 'bbs/read.html', {'post': post})
 
 @login_required(login_url='/bbs/login')
@@ -79,30 +96,49 @@ def delete(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
-    if post.author == request.user:
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
+    can_delete, error_msg = check_post_permission(request.user, post, None)
+    if can_delete:
         post.delete()
-    return redirect('list')
+        return redirect('list')
+    else:
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 @login_required(login_url='/bbs/login')
 def edit(request, post_id):
     try:
         post = Post.objects.get(id=int(post_id))
     except ObjectDoesNotExist:
-        return redirect('list')
+        error_msg = 'There is no post that id is ' + post_id
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
     if request.method == 'GET':
-        return render(request, 'bbs/edit.html', {'post': post})
+        can_edit, error_msg = check_post_permission(request.user, post, None)
+        if can_edit:
+            return render(request, 'bbs/edit.html', {'post': post})
+        else:
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
     elif request.method == 'POST':
         user = request.user
         title = request.POST.get('title')
         content = request.POST.get('content')
         use_script = 'use_script' in request.POST
-        if check_post_permission(user, post, use_script):
+
+        if not use_script:
+            title = escape(title)
+            content = escape(content)
+
+        can_edit, error_msg = check_post_permission(user, post, use_script)
+        if can_edit:
             post.title = title
             post.content = content
             post.use_script = use_script
             post.save()
-        return redirect("list")
+            return redirect("list")
+        else:
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 
 #### PGP auth related
@@ -125,7 +161,11 @@ def auth_chal(request):
                 'service_pubkey': service_pubkey
             }
             return render(request, 'bbs/auth_chal.html', context)
-    return redirect('auth_index')
+        else:
+            return render(request, 'bbs/auth_index.html', {'error':True})
+    else:
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 def auth_resp(request):
     if request.method == 'POST':
@@ -139,15 +179,19 @@ def auth_resp(request):
         else:
             print("Auth failed")
             request.session['auth_success'] = False
-            return redirect('auth_index')
+            error_msg = 'Authentication Failed, Are you really ' + auth_id + '?'
+            return render(request, 'bbs/error.html', {'error_msg': error_msg})
     else:
-        return redirect('index')
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
 
 def auth_success(request):
     success = request.session.get('auth_success')
     auth_id = request.session.get('auth_id')
     if success and auth_id:
-        if request.method == 'POST':
+        if request.method == 'GET':
+            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
+        elif request.method == 'POST':
             password = request.POST.get('password')
             password_check = request.POST.get('password_check')
             if password == password_check:
@@ -159,6 +203,34 @@ def auth_success(request):
                     user = User(username=auth_id)
                 user.set_password(password)
                 user.save()
+                return redirect('login')
+            else:
+                return render(request,
+                              'bbs/auth_success.html',
+                              {'auth_id': auth_id, 'error':True})
+    else:
+        error_msg = 'Invalid access'
+        return render(request, 'bbs/error.html', {'error_msg': error_msg})
+
+
+### Notary related
+
+@login_required(login_url='/bbs/login')
+def notarize(request):
+    if request.method == 'GET':
+        return render(request, 'bbs/notarize.html', {})
+    elif request.method == 'POST':
+        user = request.user
+        auth_id = user.username
+        proof = request.POST.get('proof')
+        #TODO: MUST BE REMOVED BEFORE CTF ( or True )
+        if verify_notary(auth_id, proof) or True:
+            # Grant use_script permission
+            permission = Permission.objects.get(codename='use_script')
+            user.user_permissions.add(permission)
+            user.save()
+            print("{} is notarized.".format(auth_id))
+            return redirect('list')
         else:
-            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
-    return redirect('auth_index')
+            print("{} is not notarized.".format(auth_id))
+            return render(request, 'bbs/notarize.html', {'error': True})
