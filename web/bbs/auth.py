@@ -13,13 +13,27 @@ def _sanitize_id(auth_id):
 def generate_challenge(auth_id):
     '''
     Given auth_id, generates a random nonce and
-    the nonce value encrypted with the public key of auth_id.
+    the nonce value signed with the private key of server
+    and encrypted with the public key of auth_id.
     Returns a 2-tuple (nonce as string, encrypted_nonce as string).
     Returns None on error.
     '''
     # Block directory traversal attack.
     if not _sanitize_id(auth_id):
         return None
+
+    # Generate nonce
+    nonce = str(random.randint(0, 2**64))
+
+    # Load service private key
+    gpg = gnupg.GPG()
+    key_path = settings.SERVICE_PRIVKEY
+    service_key = None
+    with open(key_path, 'r') as f:
+        service_key = gpg.import_keys(f.read())
+
+    # Sign nonce with server private key
+    signed_nonce = gpg.sign(nonce)
 
     # Load student's public key
     gpg = gnupg.GPG()
@@ -32,11 +46,10 @@ def generate_challenge(auth_id):
     except FileNotFoundError:
         return None
 
-    # Generate nonce
-    nonce = str(random.randint(0, 2**64))
-
-    # Encrypt nonce
-    enc_nonce = gpg.encrypt(nonce, user_key.fingerprints[0], always_trust=True) # Returns ascii-armored encrypted messsage.
+    # Encrypt signed_nonce with user's public key
+    enc_nonce = gpg.encrypt(str(signed_nonce),
+                            user_key.fingerprints[0],
+                            always_trust=True)
 
     return (nonce, enc_nonce)
 
