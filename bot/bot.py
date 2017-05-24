@@ -61,7 +61,7 @@ def bbs_login(driver):
         element = WebDriverWait(driver, 5).until(EC.title_contains('list'))
     except:
         print "[Fail] Cannot login"
-        driver.close()
+        driver.quit()
         exit(1)
    
 
@@ -70,17 +70,17 @@ def set_cookie(driver, domain):
     try:
         f = open(FLAG_FILE, 'r')
         flag = f.readline()
-        f.close()
+        f.quit()
     except:
         print "[Fail] Cannot read a flag file, " + FLAG_FILE
-        driver.close()
+        driver.quit()
         exit(1)
 
     # Check flag size
     flag = flag.strip()
     if len(flag) != 16:
         print "[Fail] Invalid length of the flag value, %d" % len(flag)
-        driver.close()
+        driver.quit()
         exit(1)
 
     # Set a cookie with the flag value
@@ -155,5 +155,5 @@ if __name__ == '__main__':
         bbs_login(driver)
         read_posting(driver)
 
-        driver.close()
+        driver.quit()
         time.sleep(5)
