@@ -98,7 +98,8 @@ def visit_website(driver, domain):
 
 
 def set_driver(driver):
-    driver.implicitly_wait(3)
+    # Doesn't work in the is521 box, dont know why..
+    #driver.implicitly_wait(3)
     driver.set_window_size(1000, 600)
    
 
