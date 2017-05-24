@@ -18,7 +18,7 @@ ADMIN_PW = ''
 SITE = ''
 DOMAIN_NAME = ''
 
-READ_TIMEOUT = 5
+READ_TIMEOUT = 3
 
 def read_posting(driver):
     # Get post's links by inspecting html
@@ -86,7 +86,8 @@ def set_cookie(driver, domain):
 
     # Set a cookie with the flag value
     try:   
-        driver.add_cookie({'name': 'flag', 'value': flag, 'domain': domain})
+        driver.add_cookie({'name': 'flag', 'value': flag, 'domain': domain,
+            'path': '/', 'expires': None})
         print "Set-cookie: flag=" + flag + ", domain=" + domain
     except:
         print "Cannot set a cookie."

@@ -11,6 +11,7 @@ doit () {
 }
 
 doit sudo apt-get install -y firefox
+doit sudo apt-get install xvfb
 
 if [ ! -f /usr/local/bin/geckodriver ]; then
     doit sudo chmod +x driver/geckodriver

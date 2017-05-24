@@ -34,5 +34,5 @@ Written in Python 2.7 and python-selenium.
 
 ## Run
 
-	python bot.py
+	Xvfb :99 -ac & export DISPLAY=:99 & python bot.py
 
