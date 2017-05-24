@@ -14,9 +14,11 @@ def get_csrf_token(r):
 
 def carve_chal(r):
     data = r.content
-    m = re.search('-----BEGIN PGP MESSAGE-----[^\-]+-----END PGP MESSAGE-----', data)
+    m = re.search('-----BEGIN PGP MESSAGE-----[^\-]+\
+                   -----END PGP MESSAGE-----', data)
     enc_nonce = m.group(0)
-    m = re.search('-----BEGIN PGP PUBLIC KEY BLOCK-----[^\-]+-----END PGP PUBLIC KEY BLOCK-----', data)
+    m = re.search('-----BEGIN PGP PUBLIC KEY BLOCK-----[^\-]+\
+                   -----END PGP PUBLIC KEY BLOCK-----', data)
     service_pubkey = m.group(0)
     return enc_nonce, service_pubkey
 
@@ -55,7 +57,9 @@ def do_auth(domain, github_id):
     pw = '1234'
     print('Setting your pw to "{}"'.format(pw))
     s.post(domain + '/bbs/auth/success/',
-            {'csrfmiddlewaretoken': token, 'password': pw, 'password_check': pw})
+            {'csrfmiddlewaretoken': token,
+             'password': pw,
+             'password_check': pw })
 
     print('sessionid={}'.format(s.cookies['sessionid']))
 
