@@ -39,8 +39,7 @@ def read_posting(driver):
                 s_time = time.time()
                 while WebDriverWait(driver, 1).until(EC.alert_is_present()):
                     if time.time() - s_time > READ_TIMEOUT:
-                        driver.quite()
-                        driver.execute_script('window.history.go(-1)')
+                        raise
                     alert = driver.switch_to_alert()
                     alert.accept()
             except:

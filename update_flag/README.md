@@ -19,8 +19,8 @@ Public key must be named as `GithubID.pub`
 
 ## Setup
 
-    pip install -r requirements.txt
+    sudo pip install -r requirements.txt
 
 ## Run
 
-    python keyserver.py [TEMA_Private_Key_File] [TA's_Public_Key_Folder]
+    sudo python keyserver.py [TEAM_Private_Key_File] [TA's_Public_Key_Folder]

@@ -72,7 +72,8 @@ def write(request):
             title = escape(title)
             content = escape(content)
 
-        post = Post(title=title, content=content, use_script=use_script, author=user)
+        post = Post(title=title, content=content, use_script=use_script,
+                    author=user)
 
         can_write, error_msg = check_post_permission(user, post, use_script)
         if can_write:
@@ -190,7 +191,8 @@ def auth_success(request):
     auth_id = request.session.get('auth_id')
     if success and auth_id:
         if request.method == 'GET':
-            return render(request, 'bbs/auth_success.html', {'auth_id': auth_id})
+            return render(request, 'bbs/auth_success.html',
+                          {'auth_id': auth_id})
         elif request.method == 'POST':
             password = request.POST.get('password')
             password_check = request.POST.get('password_check')
@@ -199,7 +201,8 @@ def auth_success(request):
                     # Change password if the user already exists.
                     user = User.objects.get(username=auth_id)
                 except ObjectDoesNotExist:
-                    # Create new user and set password if the user does not exists.
+                    # Create new user and
+                    # Set password if the user does not exists.
                     user = User(username=auth_id)
                 user.set_password(password)
                 user.save()
@@ -223,8 +226,7 @@ def notarize(request):
         user = request.user
         auth_id = user.username
         proof = request.POST.get('proof')
-        #TODO: MUST BE REMOVED BEFORE CTF ( or True )
-        if verify_notary(auth_id, proof) or True:
+        if verify_notary(auth_id, proof):
             # Grant use_script permission
             permission = Permission.objects.get(codename='use_script')
             user.user_permissions.add(permission)
