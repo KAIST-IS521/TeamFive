@@ -25,4 +25,5 @@ sudo echo "NOTARY_PUBKEY='$KEY_ROOT/pub/notary.pub'" >> ./web/gov/settings/local
 sudo echo "STUDENT_PUBKEY_DIR='$KEY_ROOT/student'" >> ./web/gov/settings/local.py
 sudo echo "SERVICE_PUBKEY='$KEY_ROOT/pub/service.pub'" >> ./web/gov/settings/local.py
 sudo echo "SERVICE_PRIVKEY='$KEY_ROOT/priv/service.key'" >> ./web/gov/settings/local.py
+sudo echo "SERVICE_PRIVKEY_PASSPHRASE=None" >> ./web/gov/settings/local.py
 echo "ALLOWED_HOSTS = ['*']" >> ./web/gov/settings/local.py
