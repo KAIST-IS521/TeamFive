@@ -16,7 +16,7 @@ doit sudo apt-get update
 doit sudo apt-get install -y python-minimal python2.7 python3 python-dev python3-dev
 
 # Install python for both 2 and 3
-if type "pip" &> /dev/null; then
+if [type "pip2" &> /dev/null] and [type "pip3" &> /dev/null]; then
     msg "pip is already installed"
 else
     doit curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
