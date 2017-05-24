@@ -13,7 +13,7 @@ doit () {
 doit sudo apt-get update
 
 # Install python
-doit sudo apt-get install -y python-minimal python2.7 python3 python-dev python3-dev
+doit sudo apt-get install -y python-minimal python2.7 python3 python-dev python3-dev curl
 
 # Install python for both 2 and 3
 if [type "pip2" &> /dev/null] and [type "pip3" &> /dev/null]; then
