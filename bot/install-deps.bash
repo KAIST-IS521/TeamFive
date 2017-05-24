@@ -10,8 +10,7 @@ doit () {
     $*
 }
 
-doit sudo apt-get install -y firefox
-doit sudo apt-get install xvfb
+doit sudo apt-get install -y firefox-esr xvfb
 
 if [ ! -f /usr/local/bin/geckodriver ]; then
     doit sudo chmod +x driver/geckodriver
