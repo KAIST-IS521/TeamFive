@@ -68,7 +68,9 @@ int connecturl(char* ip, int port){
 
 	struct recv_data data;
 
-	struct curl_slist *cookies;
+	char temp[512];
+
+	
 	
 
 	data.data = malloc(1);
@@ -78,39 +80,62 @@ int connecturl(char* ip, int port){
 
 	if(curl){
 
-		curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/");
-		//curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
-		curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "-");
+		curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
+		curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./coo.txt");
+		//curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
 		res = curl_easy_perform(curl);
 		
-		if(res != CURLE_OK) 
-			{
+		if(res != CURLE_OK){
 				fprintf(stderr, "curl,easy_perform() failed: %s\n", curl_easy_strerror(res));
-
-			
 				return -1;
 			}
 		else{
+			//printf("%s\n", data);
 
-			printf("Enter the bbs page successfully\n");
-
+			struct curl_slist *cookies = NULL;
+			
 			res = curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &cookies);
 
-		/*curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "username=bjgwak&password=bbbbbbbb&csrfmiddlewaretoken=CSRF_TOKEN");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);*/
-		if(!res && cookies){
-			while(cookies){
-				printf("%s\n", cookies->data);
-				}
-		}
+			char* ptr;
 
-		//res = curl_easy_perform(curl);
+			if(!res && cookies){
+			
+			//printf("%s\n", cookies->data);
 
-//printf("%s\n", data.data);
+			
+
+			ptr = strtok(cookies->data, "\t");
+			ptr = strtok(NULL, "\t");
+			ptr = strtok(NULL, "\t");
+			ptr = strtok(NULL, "\t");
+			ptr = strtok(NULL, "\t");
+			ptr = strtok(NULL, "\t");
+			ptr = strtok(NULL, "\t");
+
+
+			//printf("%s\n", ptr);
+
+			curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
+			strcat(temp, "username=bjgwak&password=bbbbbbbb&csrfmiddlewaretoken=");
+			strcat(temp, ptr);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, temp);
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		
+			
+		
+
+			res = curl_easy_perform(curl);
+
+			//printf("%s\n", data.data);
+
+			}
+
+
 			
 			return -1;
 
