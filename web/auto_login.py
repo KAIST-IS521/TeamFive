@@ -14,11 +14,13 @@ def get_csrf_token(r):
 
 def carve_chal(r):
     data = r.content
-    m = re.search('-----BEGIN PGP MESSAGE-----[^\-]+\
-                   -----END PGP MESSAGE-----', data)
+    pat = '-----BEGIN PGP MESSAGE-----[^\-]+-----END PGP MESSAGE-----'
+    m = re.search(pat, data)
     enc_nonce = m.group(0)
-    m = re.search('-----BEGIN PGP PUBLIC KEY BLOCK-----[^\-]+\
-                   -----END PGP PUBLIC KEY BLOCK-----', data)
+
+    pat = '-----BEGIN PGP PUBLIC KEY BLOCK-----[^\-]+'
+    pat += '-----END PGP PUBLIC KEY BLOCK-----'
+    m = re.search(pat, data)
     service_pubkey = m.group(0)
     return enc_nonce, service_pubkey
 
@@ -41,6 +43,7 @@ def do_auth(domain, github_id):
     os.system('gpg --decrypt --output /tmp/nonce.txt /tmp/nonce.gpg')
     with open('/tmp/nonce.txt', 'r') as f:
         nonce = f.read()
+    nonce = nonce.splitlines()[3].strip()
     print('nonce = {}'.format(nonce))
 
     # Encrypt nonce
