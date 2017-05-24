@@ -27,7 +27,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-int connecturl(char* ip, int port){
+int connecturl(char* ip, char* port, char* id, char* password){
 
 	CURL *curl;
 
@@ -37,9 +37,6 @@ int connecturl(char* ip, int port){
 
 	char temp[512];
 
-	
-	
-
 	data.data = malloc(1);
 	data.size = 0;
 
@@ -47,7 +44,17 @@ int connecturl(char* ip, int port){
 
 	if(curl){
 
-		curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
+		char url[128];
+
+		strcpy(url, ip);
+		strcat(url, ":");
+		strcat(url, port);
+		strcat(url, "/bbs/login/");
+
+		printf("target: %s", url);
+
+		//curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
+		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
 		curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "./coo.txt");
@@ -72,8 +79,6 @@ int connecturl(char* ip, int port){
 			
 			//printf("%s\n", cookies->data);
 
-			
-
 			ptr = strtok(cookies->data, "\t");
 			ptr = strtok(NULL, "\t");
 			ptr = strtok(NULL, "\t");
@@ -86,8 +91,17 @@ int connecturl(char* ip, int port){
 			//printf("%s\n", ptr);
 
 			curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
-			strcat(temp, "username=bjgwak&password=bbbbbbbb&csrfmiddlewaretoken=");
+			//strcat(temp, "username=bjgwak&password=bbbbbbbb&csrfmiddlewaretoken=");
+
+			strcat(temp, "username=");
+			strcat(temp, id);
+			strcat(temp, "&password=");
+			strcat(temp, password);
+			strcat(temp, "&csrfmiddlewaretoken=");
+
+
 			strcat(temp, ptr);
+
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, temp);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
@@ -126,7 +140,7 @@ int main(int argc, char** argv){
 	}
 
 	char* ip = argv[1];
-	int port = atoi(argv[2]);
+	char* port = argv[2];
 
 	char id[25];
 	char password[25];
@@ -134,6 +148,7 @@ int main(int argc, char** argv){
 	FILE* fp = fopen("./account.csv", "r");
 
 	char line[128];
+
 	while(fgets(line, 128, fp)){
 
 		char* temp = strtok(line, ",");
@@ -144,23 +159,18 @@ int main(int argc, char** argv){
 
 		strcpy(password, temp);
 
+		password[strlen(password)-1] = '\0';		
 
-		printf("%s %s", id, password);
+		int result = connecturl(ip, port, id, password);
+		
+		switch(result){
 
-		if(connecturl(ip, port) < 0){
-			printf("connection error\n");
-			return 2;
-		}
-		else{
-			if(login(id, password) < 0){	//login(id, password)
-				printf("Login error\n");
-				return 1;
-			}
-			else{
-				printf("Login successfully\n");
-				return 0;
-			}
-				
+		case -1: printf("connection error: %s:%s\n", ip, port); return 2; 
+
+		case 0: printf("%s/%s: Login success\n", id, password); return 0;
+
+		case 1: printf("%s/%s: Login failure\n", id, password); return 1;
+
 		}
 
 	}
