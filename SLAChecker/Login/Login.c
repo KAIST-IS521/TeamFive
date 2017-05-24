@@ -27,39 +27,6 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-int main(int argc, char** argv){
-
-	if(argc != 3){
-		printf("Usage: ./Login.c <IP> <Port>");
-		return;
-	}
-
-	char* ip = argv[1];
-	int port = atoi(argv[2]);
-
-	if(connecturl(ip, port) < 0){
-		return 2;
-	}
-	else{
-
-		//parse_csv(id,password)
-
-		char* id;
-		char* password;
-
-		if(login(id, password) < 0){	//login(id, password)
-			printf("Login error\n");
-			return 1;
-		}
-		else{
-			printf("Login successfully\n");
-			return 0;
-		}
-			
-	}
-
-}
-
 int connecturl(char* ip, int port){
 
 	CURL *curl;
@@ -137,7 +104,7 @@ int connecturl(char* ip, int port){
 
 
 			
-			return -1;
+			return 0;
 
 		}
 
@@ -147,44 +114,59 @@ int connecturl(char* ip, int port){
 }
 
 int login(char* id, char* password){
-	
-	CURL *curl;
 
-	CURLcode res;
+	return 0;
+}
 
-	struct recv_data data;
-	data.data = malloc(1);
-	data.size = 0;
+int main(int argc, char** argv){
 
-	curl = curl_easy_init();
+	if(argc != 3){
+		printf("Usage: ./Login.c <IP> <Port>");
+		return;
+	}
 
-	if(curl){
+	char* ip = argv[1];
+	int port = atoi(argv[2]);
 
-		curl_easy_setopt(curl, CURLOPT_URL, "127.0.0.1:12345/bbs/login/");
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "username=bjgwak&password=bbbbbbbb");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*) &data);
+	char id[25];
+	char password[25];
+
+	FILE* fp = fopen("./account.csv", "r");
+
+	char line[128];
+	while(fgets(line, 128, fp)){
+
+		char* temp = strtok(line, ",");
+
+		strcpy(id, temp);
+
+		temp = strtok(NULL, "");
+
+		strcpy(password, temp);
 
 
-		res = curl_easy_perform(curl);
-		
-		if(res != CURLE_OK) 
-			{
-				fprintf(stderr, "curl,easy_perform() failed: %s\n", curl_easy_strerror(res));
+		printf("%s %s", id, password);
 
-			
-				return -1;
-			}
+		if(connecturl(ip, port) < 0){
+			printf("connection error\n");
+			return 2;
+		}
 		else{
-
-			printf("%s\n", data.data);
-
-			
-			return 0;
-
+			if(login(id, password) < 0){	//login(id, password)
+				printf("Login error\n");
+				return 1;
+			}
+			else{
+				printf("Login successfully\n");
+				return 0;
+			}
+				
 		}
 
-
 	}
+
+
+
+
 }
 
