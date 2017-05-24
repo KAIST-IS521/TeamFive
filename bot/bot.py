@@ -26,7 +26,7 @@ def read_posting(driver):
     link_num = len(links)
 
     if(link_num == 0):
-        print "Canot read any post."
+        print "Cannot read any post."
 
     # Read each post and go back to bbs list page 
     else:
