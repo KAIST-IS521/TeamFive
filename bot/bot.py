@@ -70,7 +70,7 @@ def set_cookie(driver, domain):
     try:
         f = open(FLAG_FILE, 'r')
         flag = f.readline()
-        f.quit()
+        f.close()
     except:
         print "[Fail] Cannot read a flag file, " + FLAG_FILE
         driver.quit()
