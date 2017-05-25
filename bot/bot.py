@@ -34,14 +34,16 @@ def read_posting(driver):
             try:
                 WebDriverWait(driver, 5).until(EC.title_contains('list'))
                 links[i].click()
-                WebDriverWait(driver, 5).until(EC.title_contains('Read'))
-                # Wait 1 second after closing all alert boxes
+                # Wait 1 second to load an posting
+                time.sleep(1)
                 s_time = time.time()
-                while WebDriverWait(driver, 1).until(EC.alert_is_present()):
+                while True:
+                    WebDriverWait(driver, 1).until(EC.alert_is_present())
                     if time.time() - s_time > READ_TIMEOUT:
                         raise
                     alert = driver.switch_to_alert()
                     alert.accept()
+                    time.sleep(0.1)
             except:
                 driver.execute_script('window.history.go(-1)')
  
