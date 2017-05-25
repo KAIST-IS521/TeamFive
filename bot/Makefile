@@ -10,6 +10,6 @@ env:
 	virtualenv --python=`which python2.7` env
 
 clean:
-	rm -rf env geckodriver.log
+	rm -rf env geckodriver.log config.conf
 
 .PHONY: all setup clean
