@@ -18,6 +18,7 @@ RUN apt-get install -y sqlite3 gnupg
 
 RUN apt-get install -y build-essential
 RUN apt-get install -y nginx
+RUN apt-get install -y supervisor
 
 COPY bot /bot
 COPY web /web
@@ -45,3 +46,6 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 RUN rm -f /etc/nginx/sites-enabled/*
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord"]
