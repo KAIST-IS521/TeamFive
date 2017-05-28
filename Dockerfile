@@ -55,14 +55,6 @@ RUN curl -Lo /tmp/gecko.tar.gz \
     && cd /tmp \
     && tar xf /tmp/gecko.tar.gz \
     && mv /tmp/geckodriver /usr/local/bin/geckodriver
-# admin_pass will be set in start.sh
-# domain_name will be set as environment variable.
-RUN head /dev/urandom | base64 | head -n1 | cut -b -10 > /tmp/adminpass \
-    && echo "[government]" >> /bot/config.conf \
-    && echo "admin_id = admin" >> /bot/config.conf \
-    && echo "site = http://localhost" >> /bot/config.conf \
-    && echo "domain_name = bank.team1" >> /bot/config.conf \
-    && rm /tmp/adminpass
 
 # Install flag updater
 COPY update_flag /update_flag
