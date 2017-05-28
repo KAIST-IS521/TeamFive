@@ -33,7 +33,8 @@ def generate_challenge(auth_id):
         service_key = gpg.import_keys(f.read())
 
     # Sign nonce with server private key
-    signed_nonce = gpg.sign(nonce)
+    passphrase = settings.SERVICE_PRIVKEY_PASSPHRASE
+    signed_nonce = gpg.sign(nonce, passphrase=passphrase)
 
     # Load student's public key
     gpg = gnupg.GPG()
