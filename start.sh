@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+[ -z "$FLAG_DOMAIN" ] && echo "Please set FLAG_DOMAIN environment variable." && exit 1;
+
 # Auto-generate admin password
 admin_pass="`head /dev/urandom | base64 | head -n1 | cut -b -10`"
 
@@ -14,7 +16,7 @@ echo "[government]" > /bot/config.conf
 echo "admin_id = admin" >> /bot/config.conf
 echo "admin_pw = $admin_pass" >> /bot/config.conf
 echo "site = localhost" >> /bot/config.conf
-echo "domain_name = naver.com" >> /bot/config.conf
+echo "domain_name = $FLAG_DOMAIN" >> /bot/config.conf
 
 echo "--------- Starting TeamFive ---------"
 echo "admin_pass = $admin_pass"
