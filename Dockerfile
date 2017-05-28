@@ -10,6 +10,8 @@ RUN apt-get install -y \
     sqlite3 \
     gnupg \
     build-essential \
+    xvfb \
+    firefox \
     nginx \
     supervisor
 
@@ -25,8 +27,8 @@ RUN pip3 install requests python-gnupg
 COPY web /web
 COPY key /key
 RUN pip3 install -r /web/requirements.txt
+# SECRET_KEY will be set in start.sh
 RUN echo 'from .prod import *' >> /tmp/local.py \
-    && echo "SECRET_KEY='`head /dev/urandom | base64 | head -n1`'" >> /tmp/local.py \
     && echo "NOTARY_PUBKEY='/key/notary.pub'" >> /tmp/local.py \
     && echo "STUDENT_PUBKEY_DIR='/key/student'" >> /tmp/local.py \
     && echo "SERVICE_PUBKEY='/key/service.pub'" >> /tmp/local.py \
@@ -34,7 +36,6 @@ RUN echo 'from .prod import *' >> /tmp/local.py \
     && echo "SERVICE_PRIVKEY_PASSPHRASE=None" >> /tmp/local.py \
     && echo "ALLOWED_HOSTS = ['*']" >> /tmp/local.py \
     && mv /tmp/local.py /web/gov/settings/local.py
-RUN cd web && python3 manage.py migrate
 
 # Setup nginx
 COPY nginx.conf /etc/nginx/conf.d/
@@ -49,14 +50,28 @@ RUN rm -f /etc/nginx/sites-enabled/*
 # Install bot
 COPY bot /bot
 RUN pip2 install -r /bot/requirement.txt
+RUN curl -Lo /tmp/gecko.tar.gz \
+      https://github.com/mozilla/geckodriver/releases/download/v0.14.0/geckodriver-v0.14.0-linux32.tar.gz \
+    && cd /tmp \
+    && tar xf /tmp/gecko.tar.gz \
+    && mv /tmp/geckodriver /usr/local/bin/geckodriver
+# admin_pass will be set in start.sh
+# domain_name will be set as environment variable.
+RUN head /dev/urandom | base64 | head -n1 | cut -b -10 > /tmp/adminpass \
+    && echo "[government]" >> /bot/config.conf \
+    && echo "admin_id = admin" >> /bot/config.conf \
+    && echo "site = http://localhost" >> /bot/config.conf \
+    && echo "domain_name = bank.team1" >> /bot/config.conf \
+    && rm /tmp/adminpass
 
 # Install flag updater
 COPY update_flag /update_flag
 RUN pip2 install -r /update_flag/requirement.txt
 
-
-
 # Setup supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-CMD ["/usr/bin/supervisord"]
+# Startup script
+COPY start.sh /start.sh
+
+CMD ["/start.sh"]
