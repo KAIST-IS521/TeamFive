@@ -10,6 +10,10 @@ This project has following components.
 
 ## How to run
 
+\1. Put service private key at `key/service.key`
+
+\2. Run
+
 ```
 ./run.sh
 ```
