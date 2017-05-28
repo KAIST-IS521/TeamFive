@@ -9,5 +9,10 @@ def get_csrf_token(r):
     return m.group(1)
 
 def test_connection(domain):
-    r = requests.get(domain)
-    return r.status_code
+    try:
+        r = requests.get(domain)
+        if r.status_code == requests.codes.ok:
+            return True
+        return False
+    except:
+        return False

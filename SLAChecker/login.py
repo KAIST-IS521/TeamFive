@@ -40,7 +40,7 @@ if __name__ == '__main__':
     domain = 'http://{}:{}'.format(sys.argv[1], sys.argv[2])
 
     # check if connection can establish
-    if test_connection(domain) != requests.codes.ok:
+    if not test_connection(domain):
         exit(2)
 
     exit_code = run(domain, session)
