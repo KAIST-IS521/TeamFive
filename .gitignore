@@ -162,3 +162,7 @@ dkms.conf
 
 ## Secret Key
 *.key
+
+#swap file
+*.swp
+*.swo
