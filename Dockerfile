@@ -3,7 +3,10 @@ FROM ioft/i386-ubuntu:16.04
 # Change apt repository since we will run it in the CTF server.
 RUN sed -i 's/archive.ubuntu.com/ftp.kaist.ac.kr/g' /etc/apt/sources.list
 
-RUN apt-get update
+RUN apt-get update \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository ppa:jonathonf/firefox-esr \
+    && apt-get update
 RUN apt-get install -y \
     curl git \
     python-minimal python3 python2.7-dev python3-dev \
@@ -11,7 +14,7 @@ RUN apt-get install -y \
     gnupg \
     build-essential \
     xvfb \
-    firefox \
+    firefox-esr \
     nginx \
     supervisor
 
