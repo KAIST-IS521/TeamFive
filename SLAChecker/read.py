@@ -2,19 +2,8 @@ import os
 import sys
 import requests
 import re
-from common import ID, PW, get_csrf_token, test_connection
+from common import ID, PW, get_csrf_token, test_connection, get_a_post
 from login import test_login
-from bs4 import BeautifulSoup
-
-def get_a_post(domain, session):
-    r = session.get(domain + '/bbs/list')
-    soup = BeautifulSoup(r.content, 'html.parser')
-
-    for link in soup.find_all('a'):
-        rpage = link.get('href')
-        if "/bbs/read/" in rpage:
-            return rpage.split('/')[-1]
-    return -1
 
 def test_read(domain, session):
     post_id = get_a_post(domain, session)
