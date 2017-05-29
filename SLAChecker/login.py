@@ -6,11 +6,11 @@ import csv
 from common import ID, PW, get_csrf_token, test_connection
 
 
-def test_login(domain, session, lineid, linepw):
+def test_login(domain, session):
     r = session.get(domain + '/bbs/login')
     token = get_csrf_token(r)
 
-    payload = {'username': lineid, 'password': linepw, 'csrfmiddlewaretoken': token}
+    payload = {'username': ID, 'password': PW, 'csrfmiddlewaretoken': token}
     r = session.post(domain + '/bbs/login/', data = payload )
 
     if r.status_code == requests.codes.ok:
@@ -18,6 +18,20 @@ def test_login(domain, session, lineid, linepw):
             return True
 
     return False
+
+def test_csvlogin(domain, session, csvid, csvpw):
+    r = session.get(domain + '/bbs/login')
+    token = get_csrf_token(r)
+
+    payload = {'username': csvid, 'password': csvpw, 'csrfmiddlewaretoken': token}
+    r = session.post(domain + '/bbs/login/', data = payload )
+
+    if r.status_code == requests.codes.ok:
+        if 'list' in r.url:
+            return True
+
+    return False
+
 
 def test_logout(domain, session):
     r = session.get(domain + '/bbs/logout')
@@ -36,7 +50,7 @@ def run(domain, session):
     csvReader = csv.reader(f)
     
     for row in csvReader:
-        if test_login(domain, session, row[0].split(' ')[0], row[0].split(' ')[1]) and test_logout(domain, session):
+        if test_csvlogin(domain, session, row[0].split(' ')[0], row[0].split(' ')[1]) and test_logout(domain, session):
             continue;
         else
             return 1
