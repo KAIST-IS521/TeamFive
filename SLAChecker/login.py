@@ -4,6 +4,7 @@ import requests
 import gnupg
 from common import ID, PW, get_csrf_token, test_connection
 
+
 def test_login(domain, session):
     r = session.get(domain + '/bbs/login')
     token = get_csrf_token(r)
