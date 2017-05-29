@@ -43,7 +43,8 @@ def do_auth(domain, github_id):
     os.system('gpg --decrypt --output /tmp/nonce.txt /tmp/nonce.gpg')
     with open('/tmp/nonce.txt', 'r') as f:
         nonce = f.read()
-    nonce = nonce.splitlines()[3].strip()
+    nonce = nonce.strip()
+    #nonce = nonce.splitlines()[3].strip()
     print('nonce = {}'.format(nonce))
 
     # Encrypt nonce

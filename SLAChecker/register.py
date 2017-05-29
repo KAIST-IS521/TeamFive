@@ -39,7 +39,8 @@ def test_register(domain, session):
     os.system('gpg --decrypt --output /tmp/nonce.txt /tmp/nonce.gpg')
     with open('/tmp/nonce.txt', 'r') as f:
         nonce = f.read()
-    nonce = nonce.splitlines()[3].strip()
+    nonce = nonce.strip()
+    #nonce = nonce.splitlines()[3].strip()
     #print('nonce = {}'.format(nonce))
 
     # Encrypt nonce
