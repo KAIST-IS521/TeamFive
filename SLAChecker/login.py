@@ -32,7 +32,6 @@ def test_csvlogin(domain, session, csvid, csvpw):
 
     return False
 
-
 def test_logout(domain, session):
     r = session.get(domain + '/bbs/logout')
 
@@ -43,29 +42,28 @@ def test_logout(domain, session):
     return True
 
 def run(domain, session):
-
+    if test_login(domain, session) and test_logout(domain, session):
+        return 0
+    return 1
+    """
     successindex = True;
 
     f = open('./input.csv', 'r')
     csvReader = csv.reader(f)
-    
+
     for row in csvReader:
         if test_csvlogin(domain, session, row[0].split(' ')[0], row[0].split(' ')[1]) and test_logout(domain, session):
-            continue;
-        else
+            continue
+        else:
             return 1
-    
-    return 0
 
+    return 0
+    """
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
         print("Usage: {} <ip> <port>".format(sys.argv[0]))
         exit(1)
-
-   
-
-
 
     session = requests.Session()
     domain = 'http://{}:{}'.format(sys.argv[1], sys.argv[2])
@@ -75,4 +73,5 @@ if __name__ == '__main__':
         exit(2)
 
     exit_code = run(domain, session)
+    print (exit_code)
     exit(exit_code)
