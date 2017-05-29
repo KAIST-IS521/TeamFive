@@ -11,8 +11,6 @@ Written in python 2.7.
 
 ## Run
 
-    before running the each test case, you should modify ID and PW in common.py
+before running the each test case, you should modify ID and PW in common.py
 
-    ```
-    python [filename] [ip] [port]
-    ```
+python [filename] [ip] [port]
