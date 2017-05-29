@@ -1,13 +1,18 @@
 # TeamFive/SLAChecker
 
 SLA checker service for Government.
-
 Written in python 2.7.
 
 ## Requirements
 
 - python 2.7
+- requests
+- beautifulsoup4
 
 ## Run
 
-	python [filename] [ip] [port]
+    before running the each test case, you should modify ID and PW in common.py
+
+    ```
+    python [filename] [ip] [port]
+    ```
