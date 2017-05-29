@@ -34,7 +34,7 @@ def generate_challenge(auth_id):
 
     # Sign nonce with server private key
     passphrase = settings.SERVICE_PRIVKEY_PASSPHRASE
-    signed_nonce = gpg.sign(nonce, passphrase=passphrase)
+    #signed_nonce = gpg.sign(nonce, passphrase=passphrase)
 
     # Load student's public key
     gpg = gnupg.GPG()
@@ -47,10 +47,11 @@ def generate_challenge(auth_id):
     except FileNotFoundError:
         return None
 
-    # Encrypt signed_nonce with user's public key
-    enc_nonce = gpg.encrypt(str(signed_nonce),
+    enc_nonce = gpg.encrypt(nonce,
                             user_key.fingerprints[0],
-                            always_trust=True)
+                            always_trust=True,
+                            sign=service_key.fingerprints[0],
+                            passphrase=passphrase)
 
     return (nonce, enc_nonce)
 
